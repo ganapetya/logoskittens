@@ -30,38 +30,23 @@ https://www.youtube.com/watch?v=mm5qdjpUDf0
 
 The live talk is specified in [`free_conv.md`](free_conv.md). LogosKittens decouples high-level cognitive reasoning from execution media. The same primitives (`Situation`, `Task`, `Actor`, `GroupSolution`, `ElementSolution`) drive both screen avatars and physical robots. The system runs locally by default (Docker, Whisper.cpp, Piper TTS, SQLite) with an OpenAI-compatible LLM abstraction that supports local models and Grok.
 
-## Project Title
+## Example Robot Extension
 
-**LogosKittens** — a playful, memorable name that keeps the LogosCat heritage while signaling a lighter, more approachable multi-agent language environment.
+[`lk_body`](https://github.com/ganapetya/masha/tree/main/ros2_ws/src/lk_body) is the robot side for Masha, a hexapod on a Jetson. It dials the hub's `/players` socket, records the human on the robot's microphone, plays the reply on its speaker, and runs the poses the hub names. Use it as the pattern for connecting another robot.
 
-## Repository Recommendation
+## Models
 
-**Monorepo** (recommended).
+Some parts always run on your own machine, some run locally by default, and some call a remote model by default.
 
-The services share contracts, Docker Compose orchestration, and the cognitive model. A single repository keeps Grok Build context high and local development simple. Multi-repo is premature until the services have independent release cycles.
+| Part | Default | Where |
+| --- | --- | --- |
+| Speech recognition | whisper.cpp (`small.en`; `nb-whisper-large` for Norsk; `large-v3-turbo` for Ukrainian) | Local, on the host GPU |
+| Voice | Piper TTS | Local, in Docker |
+| Buddy's replies and the lesson subject | Ollama `qwen3:8b` | Local. Set `LLM_BACKEND=grok` to use Grok instead |
+| Bob (buddy steering), Rob (teacher corrections), Wren (games) | Grok `grok-4.7` | Remote, xAI. Needs `XAI_API_KEY` in `.env` |
+| Prompt training: judge and proposer | Grok `grok-4.7` | Remote, set in `.env_training` |
 
-Suggested repository name: `logoskittens`
-
-Place the architecture document at the root of this repository.
-
-## Suggested Monorepo Structure
-
-```
-logoskittens/
-├── AGENTS.md                      # Conventions for Grok Build / coding agents
-├── README.md
-├── logoskittens_architecture.md   # This specification
-├── docker-compose.yml
-├── proto/                         # Shared Protobuf definitions
-├── audio-engine/                  # Whisper.cpp + Piper services
-├── cognitive-hub/                 # FastAPI + LangGraph + SQLite
-│   ├── actors/                    # Role + Personality definitions
-│   ├── graph/                     # LangGraph conversation logic
-│   └── persistence/               # SQLModel models
-├── virtual-stage/                 # Vite + React frontend
-├── shared/                        # Generated stubs, common types
-└── tests/
-```
+With no xAI key, free speech still runs fully local: Bob and Rob are skipped, so Savelij makes no corrections, and the games that need Wren are not available. See [Change the model](#change-the-model) for the settings.
 
 ## Quick Start
 
