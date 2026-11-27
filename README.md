@@ -10,7 +10,7 @@ LogosKittens is a dual-interface, open-source voice client for the polyglot plat
 
 You can use the web interface to talk directly to your Mac, Linux, or Windows machine, or use the multi-bot interface to converse with physical robots that take on distinct roles, such as a conversation partner and a teacher.
 
-Everything links to your logoscat.com account, allowing you to use the texts you have translated on the platform as grounding material. This means you can practice speaking directly in the context of the exact material you just translated and studied.
+Everything links to your logoscat.com account (it is an option, this works without any account too), allowing you to use the texts you have translated on the platform as grounding material. This means you can practice speaking directly in the context of the exact material you just translated and studied.
 
 ## Web Interface
 
