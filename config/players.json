@@ -8,7 +8,7 @@
       "steerer": "bob",
       "enabled": true,
       "token_env": "MASHA_ATTACH_TOKEN",
-      "volume": {"de": 0.7}
+      "volume": {"de": 0.7, "nb": 0.7}
     },
     {
       "body_id": "savelij",

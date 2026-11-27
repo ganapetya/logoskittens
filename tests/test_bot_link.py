@@ -46,6 +46,7 @@ def test_the_shipped_player_list_is_masha_and_savelij():
     assert teacher.enabled is True
     assert teacher.token_env == "SAVELIJ_ATTACH_TOKEN"
     assert masha.gain("de") == 0.7
+    assert masha.gain("nb") == 0.7
     assert masha.gain("en") == 1.0
     assert teacher.gain("de") == 1.0
 
