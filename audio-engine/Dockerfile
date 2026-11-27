@@ -31,6 +31,23 @@ RUN wget -q -O /models/piper/uk_UA-ukrainian_tts-medium.onnx \
     && wget -q -O /models/piper/uk_UA-ukrainian_tts-medium.onnx.json \
         https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/uk/uk_UA/ukrainian_tts/medium/uk_UA-ukrainian_tts-medium.onnx.json
 
+# German: Thorsten (male, medium) and Kerstin (female, low).
+RUN wget -q -O /models/piper/de_DE-thorsten-medium.onnx \
+        https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx \
+    && wget -q -O /models/piper/de_DE-thorsten-medium.onnx.json \
+        https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx.json \
+    && wget -q -O /models/piper/de_DE-kerstin-low.onnx \
+        https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/kerstin/low/de_DE-kerstin-low.onnx \
+    && wget -q -O /models/piper/de_DE-kerstin-low.onnx.json \
+        https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/de/de_DE/kerstin/low/de_DE-kerstin-low.onnx.json
+
+# Hebrew: one male voice (saspeech). It needs Piper 1.6 or newer for its Hebrew phonemizer.
+# Published after v1.0.0, so it is pinned to a commit.
+RUN wget -q -O /models/piper/he_IL-saspeech-medium.onnx \
+        https://huggingface.co/rhasspy/piper-voices/resolve/5ec43b186ef915a195d3ddbcfd9916e76c503c3f/he/he_IL/saspeech/medium/he_IL-saspeech-medium.onnx \
+    && wget -q -O /models/piper/he_IL-saspeech-medium.onnx.json \
+        https://huggingface.co/rhasspy/piper-voices/resolve/5ec43b186ef915a195d3ddbcfd9916e76c503c3f/he/he_IL/saspeech/medium/he_IL-saspeech-medium.onnx.json
+
 WORKDIR /app
 COPY audio-engine/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt

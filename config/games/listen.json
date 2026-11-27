@@ -2,8 +2,8 @@
   "id": "listen",
   "phase": 1,
   "listed": true,
-  "titles": {"en": "ListenGame", "nb": "LyttGame", "uk": "СлухайGame"},
-  "summary": {"en": "Hear a line from the text and say it back from memory.", "nb": "Hør en linje fra teksten og si den tilbake etter hukommelsen.", "uk": "Почуй рядок із тексту й повтори його з пам'яті."},
+  "titles": {"en": "ListenGame", "nb": "LyttGame", "uk": "СлухайGame", "de": "HörGame", "he": "הקשבהGame"},
+  "summary": {"en": "Hear a line from the text and say it back from memory.", "nb": "Hør en linje fra teksten og si den tilbake etter hukommelsen.", "uk": "Почуй рядок із тексту й повтори його з пам'яті.", "de": "Hör eine Zeile aus dem Text und sprich sie aus dem Gedächtnis nach.", "he": "שמעו שורה מהטקסט וחזרו עליה מהזיכרון."},
   "requires": ["wren"],
   "next": "echo_chamber",
   "min_targets": 4,
@@ -20,7 +20,9 @@
   "closing": {
     "en": "That was the last line. You caught {hits} of {total}.",
     "nb": "Det var siste linje. Du fikk med deg {hits} av {total}.",
-    "uk": "Це був останній рядок. Вловлено: {hits} із {total}."
+    "uk": "Це був останній рядок. Вловлено: {hits} із {total}.",
+    "de": "Das war die letzte Zeile. Du hast {hits} von {total} erfasst.",
+    "he": "זו הייתה השורה האחרונה. קלטתם {hits} מתוך {total}."
   },
   "capabilities": {"instruction": true, "exact_match": true, "deck_line": true}
 }

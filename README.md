@@ -161,7 +161,7 @@ PYTHONPATH=cognitive-hub/src:shared/python .venv/bin/python -m logoskittens.cli 
 
 ## Talk in the browser
 
-The page is one endless talk with Buddy about a raw material. The first material is "Vacation in Norway" (tunnels and fjords). The Talk panel lists English and Norsk. A click starts a new talk in that language.
+The page is one endless talk with Buddy about a raw material. The first material is "Vacation in Norway" (tunnels and fjords). The Talk panel lists English, Norsk, Українська, Deutsch, and עברית. Choosing עברית mirrors the page right to left. A click starts a new talk in that language.
 
 From the repo root, start three things and leave the first two running:
 
@@ -338,7 +338,7 @@ Each round is a folder under `simulations/`. Commit `decision.md` and `scores.js
 
 ## Languages
 
-A language is a config pack. English files end in `_en`. Norwegian Bokmål is `nb`, with files under `config/languages`, `config/prompts`, `config/buddies/nb`, and `config/raw_materials/nb`. The Talk panel lists English and Norsk. A click reloads that pack and switches the recognizer. Editing those files does not need an image rebuild. The hub re-reads them on the next catalog or select. Lucas (man) and Ingrid (woman) both speak with `no_NO-talesyntese-medium`.
+A language is a config pack. English files end in `_en`. Norwegian Bokmål is `nb`, with files under `config/languages`, `config/prompts`, `config/buddies/nb`, and `config/raw_materials/nb`. The Talk panel lists English, Norsk, Українська, Deutsch, and עברית. Choosing עברית mirrors the page right to left. A click reloads that pack and switches the recognizer. Editing those files does not need an image rebuild. The hub re-reads them on the next catalog or select. Lucas (man) and Ingrid (woman) both speak with `no_NO-talesyntese-medium`. Ukrainian (`uk`, Тарас and Танюша) and German (`de`, Jonas and Lena) are packs of the same shape. German speaks with Piper `de_DE-thorsten-medium` (Jonas, and Savelij as teacher) and `de_DE-kerstin-low` (Lena), and recognition uses `ggml-large-v3-turbo.bin` with `-l de`. Hebrew (`he`, נועם and מאיה) speaks with Piper `he_IL-saspeech-medium`, the only Hebrew Piper voice, so both buddies sound male; recognition uses ivrit.ai's Hebrew-tuned `whisper-large-v3-turbo` (a 1.6 GB download on the next `./scripts/host_whisper.sh`).
 
 ## Troubleshooting
 

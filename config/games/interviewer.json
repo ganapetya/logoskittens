@@ -2,8 +2,8 @@
   "id": "interviewer",
   "phase": 1,
   "listed": true,
-  "titles": {"en": "InterviewerGame", "nb": "IntervjuetGame", "uk": "Інтерв'юGame"},
-  "summary": {"en": "Answer questions about the text out loud.", "nb": "Svar høyt på spørsmål om teksten.", "uk": "Відповідай уголос на запитання про текст."},
+  "titles": {"en": "InterviewerGame", "nb": "IntervjuetGame", "uk": "Інтерв'юGame", "de": "InterviewGame", "he": "ראיוןGame"},
+  "summary": {"en": "Answer questions about the text out loud.", "nb": "Svar høyt på spørsmål om teksten.", "uk": "Відповідай уголос на запитання про текст.", "de": "Beantworte Fragen zum Text laut.", "he": "ענו בקול על שאלות על הטקסט."},
   "requires": ["wren"],
   "next": "taboo",
   "read_text": "play",
@@ -21,7 +21,9 @@
   "closing": {
     "en": "That was the last question. You got {hits} of {total}.",
     "nb": "Det var siste spørsmål. Du klarte {hits} av {total}.",
-    "uk": "Це було останнє запитання. Тобі вдалося {hits} із {total}."
+    "uk": "Це було останнє запитання. Тобі вдалося {hits} із {total}.",
+    "de": "Das war die letzte Frage. Du hattest {hits} von {total}.",
+    "he": "זו הייתה השאלה האחרונה. הצלחתם {hits} מתוך {total}."
   },
   "capabilities": {"deck_line": true, "contains_match": true, "judge": true}
 }

@@ -289,12 +289,12 @@ def test_import_refuses_an_empty_session_and_a_language_we_do_not_speak(tmp_path
     assert "no source sentences" in refused.json()["error"]
     assert service.store.get_logoscat_material("logoscat-2") is None
 
-    german = _Actors([_page(False, [_text("de", "Der Hafen ist still.")])])
-    client.app.state.logoscat = LogosCatClient("http://logoscat.test", transport=httpx.MockTransport(german.handler))
+    italian = _Actors([_page(False, [_text("it", "Il porto è tranquillo.")])])
+    client.app.state.logoscat = LogosCatClient("http://logoscat.test", transport=httpx.MockTransport(italian.handler))
     blocked = client.post(
         "/logoscat/import",
         headers=AUTH,
-        json={"workspace_session_id": 5, "language_id": "en", "name": "Hafen"},
+        json={"workspace_session_id": 5, "language_id": "en", "name": "Porto"},
     )
     assert blocked.status_code == 400
     assert "cannot talk" in blocked.json()["error"]

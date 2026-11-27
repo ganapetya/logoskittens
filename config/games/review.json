@@ -2,8 +2,8 @@
   "id": "review",
   "phase": 2,
   "listed": true,
-  "titles": {"en": "ReviewGame", "nb": "RepetisjonGame", "uk": "ПовторенняGame"},
-  "summary": {"en": "Chunks you missed in earlier rounds come back as cue cards.", "nb": "Uttrykk du bommet på i tidligere runder, kommer tilbake som stikkord.", "uk": "Вирази, пропущені в попередніх раундах, повертаються як підказки."},
+  "titles": {"en": "ReviewGame", "nb": "RepetisjonGame", "uk": "ПовторенняGame", "de": "WiederholungGame", "he": "חזרהGame"},
+  "summary": {"en": "Chunks you missed in earlier rounds come back as cue cards.", "nb": "Uttrykk du bommet på i tidligere runder, kommer tilbake som stikkord.", "uk": "Вирази, пропущені в попередніх раундах, повертаються як підказки.", "de": "Ausdrücke, die du in früheren Runden verpasst hast, kommen als Stichwortkarten zurück.", "he": "ביטויים שפספסתם בסבבים קודמים חוזרים ככרטיסי רמז."},
   "requires": ["wren"],
   "next": "roleplay",
   "prepare": "history",
@@ -20,7 +20,9 @@
   "closing": {
     "en": "That was the last card. You remembered {hits} of {total}.",
     "nb": "Det var siste kort. Du husket {hits} av {total}.",
-    "uk": "Це була остання картка. Згадано: {hits} із {total}."
+    "uk": "Це була остання картка. Згадано: {hits} із {total}.",
+    "de": "Das war die letzte Karte. Du hast dich an {hits} von {total} erinnert.",
+    "he": "זה היה הכרטיס האחרון. זכרתם {hits} מתוך {total}."
   },
   "capabilities": {"instruction": true, "hint": true, "deck_line": true, "contains_match": true}
 }

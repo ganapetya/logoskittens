@@ -690,7 +690,7 @@ def test_selecting_norsk_stores_lucas_or_ingrid(tmp_path):
     woman = service.select("user-local", "nb", "norway_vacation_tunnels_fjords", "mary")
     assert service.describe(woman)["personality_id"] == "ingrid"
     listed = service.catalog("user-local", "nb")
-    assert {item["id"] for item in listed["languages"]} == {"en", "nb", "uk"}
+    assert {item["id"] for item in listed["languages"]} == {"en", "nb", "uk", "de", "he"}
     assert [item["id"] for item in listed["personalities"]] == ["lucas", "ingrid"]
 
 

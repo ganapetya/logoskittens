@@ -3,10 +3,12 @@
 The talk asks this package to deliver. It does not open the player socket.
 """
 
+import array
 import asyncio
 import base64
 import contextlib
 import os
+import sys
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -128,6 +130,9 @@ class BotLink:
                 if name not in actions:
                     actions.append(name)
             socket = conn.socket
+            gain = conn.player.gain(language)
+        if pcm and gain != 1.0:
+            pcm = scale_pcm(pcm, gain)
         payload = {
             "type": "delivery",
             "actions": actions,
@@ -414,6 +419,20 @@ class BotLink:
             self._refusal = reason
         await socket.send_json({"type": "refused", "reason": reason})
         await socket.close()
+
+
+def scale_pcm(pcm: bytes, gain: float) -> bytes:
+    """Signed 16-bit little-endian PCM times gain, clipped to the sample range."""
+    samples = array.array("h")
+    samples.frombytes(pcm[: len(pcm) - len(pcm) % 2])
+    if samples.itemsize != 2:
+        raise RuntimeError("16-bit samples expected")
+    if sys.byteorder == "big":
+        samples.byteswap()
+    scaled = array.array("h", (max(-32768, min(32767, round(value * gain))) for value in samples))
+    if sys.byteorder == "big":
+        scaled.byteswap()
+    return scaled.tobytes()
 
 
 def _play_seconds(pcm: bytes) -> float:

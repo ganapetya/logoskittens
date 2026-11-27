@@ -20,11 +20,20 @@ export const LOCAL_SETS: LanguageSets = {
     { id: "en", live: true, reason: "" },
     { id: "nb", live: true, reason: "" },
     { id: "uk", live: true, reason: "" },
+    { id: "de", live: true, reason: "" },
+    { id: "he", live: true, reason: "" },
   ],
-  targets: [{ id: "en" }, { id: "nb" }, { id: "uk" }, { id: "de" }],
+  targets: [{ id: "en" }, { id: "nb" }, { id: "uk" }, { id: "de" }, { id: "he" }],
 };
 
-const OWN_NAMES: Record<string, string> = { en: "English", nb: "Norsk", uk: "Українська" };
+const OWN_NAMES: Record<string, string> = { en: "English", nb: "Norsk", uk: "Українська", de: "Deutsch", he: "עברית" };
+
+/** Languages written right to left. The page mirrors its layout while one of them is the source. */
+const RTL = new Set(["he", "iw", "ar", "fa", "ur", "yi"]);
+
+export function isRtl(code: string): boolean {
+  return RTL.has((code || "").split("-")[0].toLowerCase());
+}
 
 /** The language's own name for itself: English, Norsk, עברית, Deutsch. Falls back to the code. */
 export function languageName(code: string, known?: { id: string; display_name: string }[]): string {
@@ -90,7 +99,7 @@ export function LanguagesBlock({
                 disabled={!item.live}
                 aria-pressed={item.id === source}
                 onClick={() => onSource(item.id)}
-                className={`w-full rounded-xl px-3 py-2 text-left disabled:opacity-60 ${item.id === source ? "bg-lk-primary text-white" : "bg-white"}`}
+                className={`w-full rounded-xl px-3 py-2 text-start disabled:opacity-60 ${item.id === source ? "bg-lk-primary text-white" : "bg-white"}`}
               >
                 <span className="block">{languageName(item.id, known)}</span>
                 {item.live ? null : <span className="block text-xs opacity-80">{item.reason}</span>}
@@ -123,7 +132,7 @@ export function LanguagesBlock({
                     onChange={() => toggle(item.id)}
                   />
                   <span dir="auto">{languageName(item.id, known)}</span>
-                  {own ? <span className="ml-auto text-xs">Source</span> : null}
+                  {own ? <span className="ms-auto text-xs">Source</span> : null}
                 </label>
               </li>
             );

@@ -1,0 +1,23 @@
+{
+  "id": "he",
+  "display_name": "עברית",
+  "default": false,
+  "recognizer_model": "ivrit-large-v3-turbo",
+  "stt_language": "he",
+  "llm_model": "qwen3:8b",
+  "buddy_voice": "he_IL-saspeech-medium",
+  "first_person_rewrite": false,
+  "reask_soft_misses": false,
+  "language_specifics": "person: 1st\ngender: {gender_word}\nSpeak in the first person: אני, אותי, לי, שלי. You are a {gender_word}. Use your own gender in present-tense verbs and adjectives about yourself: a man says «אני אוהב», «אני שמח», «אני עייף»; a woman says «אני אוהבת», «אני שמחה», «אני עייפה». Never use your name as the subject. Never say «{other}» about yourself.\n",
+  "gender_words": {"man": "גבר", "woman": "אישה"},
+  "other_words": {"man": "הוא", "woman": "היא"},
+  "greetings": ["שלום", "היי", "הי", "אהלן", "הלו", "בוקר טוב", "צהריים טובים", "ערב טוב", "לילה טוב", "מה נשמע", "מה קורה", "מה שלומך", "שלום שלום"],
+  "question_words": ["מה", "מי", "איפה", "לאן", "מאיפה", "מתי", "למה", "מדוע", "איך", "כמה", "איזה", "איזו", "אילו", "האם", "של מי"],
+  "passive": ["כן", "אהה", "אה", "אוקיי", "אוקי", "טוב", "בסדר", "נכון", "ברור", "יופי", "סבבה", "אמממ"],
+  "whisper": {
+    "flag": "he",
+    "model": "ivrit-large-v3-turbo",
+    "weight_file": "ggml-ivrit-large-v3-turbo.bin",
+    "url": "https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml/resolve/2130c78e4a9cb4914cc4df91a1c3031407789705/ggml-model.bin"
+  }
+}

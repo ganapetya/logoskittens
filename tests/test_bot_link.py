@@ -45,6 +45,9 @@ def test_the_shipped_player_list_is_masha_and_savelij():
     assert teacher.steerer == "rob"
     assert teacher.enabled is True
     assert teacher.token_env == "SAVELIJ_ATTACH_TOKEN"
+    assert masha.gain("de") == 0.7
+    assert masha.gain("en") == 1.0
+    assert teacher.gain("de") == 1.0
 
 
 def test_host_mode_off_refuses_attach(tmp_path, monkeypatch):
@@ -453,3 +456,45 @@ def test_a_cue_sends_only_the_pose_and_holds_no_mouth(tmp_path, monkeypatch):
         link.deliver(role="buddy", pcm=b"\x00\x01" * 400, tokens=[])
         socket.receive_json()
         assert link.cue(role="buddy", tokens=["curiosity"]) == []
+
+
+def test_german_is_quieter_on_masha_only(tmp_path, monkeypatch):
+    import array
+
+    monkeypatch.setenv("MASHA_ATTACH_TOKEN", TOKEN)
+    quiet = Player("masha", "Masha", "buddy", "buddy-one", "bob", True, "MASHA_ATTACH_TOKEN", volume=(("de", 0.7),))
+    client = _client(tmp_path, [quiet])
+    _host_on(client)
+    loud = array.array("h", [1000, -1000, 32000, -32000, 0]).tobytes()
+    with client.websocket_connect("/players") as socket:
+        _attach(socket, "masha", TOKEN)
+        _register(socket, "speaking_masha", [("curiosity", "lk_curiosity")])
+        link = client.app.state.link
+        link.deliver(role="buddy", pcm=loud, tokens=[], language="de")
+        german = socket.receive_json()
+        if german["type"] == "config":
+            german = socket.receive_json()
+        link._mouth_free("buddy")
+        link.deliver(role="buddy", pcm=loud, tokens=[], language="en")
+        english = socket.receive_json()
+    played = array.array("h")
+    played.frombytes(base64.b64decode(german["pcm"]))
+    assert list(played) == [700, -700, 22400, -22400, 0]
+    assert base64.b64decode(english["pcm"]) == loud
+
+
+def test_scale_pcm_clips_and_a_bad_volume_is_refused(tmp_path):
+    import array
+    import json
+
+    from bot_link.link import scale_pcm
+
+    louder = array.array("h")
+    louder.frombytes(scale_pcm(array.array("h", [30000, -30000]).tobytes(), 2.0))
+    assert list(louder) == [32767, -32768]
+    bad = tmp_path / "players.json"
+    row = {"body_id": "x", "display_name": "X", "role": "buddy", "actor": "buddy-one", "steerer": "bob", "token_env": "X"}
+    for volume in ({"de": 0}, {"de": 3}, {"de": "loud"}, ["de"]):
+        bad.write_text(json.dumps({"players": [{**row, "volume": volume}]}), encoding="utf-8")
+        with pytest.raises(ValueError, match="volume"):
+            load_players(bad)

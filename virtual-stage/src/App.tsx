@@ -13,7 +13,7 @@ import {
 import { GameCard } from "./games/card";
 import { gameViews, type GameChrome, type GameListing } from "./games/registry";
 import { WordDiff } from "./games/word_diff";
-import { firstChoice, languageName, LanguagesBlock, languagesLine, LOCAL_SETS, type LanguageSets } from "./languages";
+import { firstChoice, isRtl, languageName, LanguagesBlock, languagesLine, LOCAL_SETS, type LanguageSets } from "./languages";
 import { playPcm } from "./pcm";
 import { Preparing } from "./preparing";
 import { decodeSolution, type SolutionView } from "./proto";
@@ -156,7 +156,7 @@ function PanelSection({
           aria-expanded={open}
           aria-controls={`panel-${id}-body`}
           onClick={() => onToggle(id)}
-          className="flex w-full items-baseline justify-between gap-2 py-1 text-left"
+          className="flex w-full items-baseline justify-between gap-2 py-1 text-start"
         >
           <span className="text-xs tracking-[0.16em] uppercase text-lk-label">{title}</span>
           <span aria-hidden="true" className="text-xs text-lk-label">
@@ -292,6 +292,14 @@ export function App() {
   useEffect(() => {
     writeSetup(setup);
   }, [setup]);
+
+  useEffect(() => {
+    // A right-to-left source (Hebrew) mirrors the whole page: the panel moves to the right and text starts there.
+    const root = document.documentElement;
+    const language = setup.languageId || "en";
+    root.dir = isRtl(language) ? "rtl" : "ltr";
+    root.lang = language;
+  }, [setup.languageId]);
 
   useEffect(() => {
     // The hub reads LogosCat. Logged out, or LogosCat down, it returns the local defaults.
@@ -1176,7 +1184,7 @@ export function App() {
           type="button"
           aria-pressed={setup.gameId === ""}
           onClick={() => chooseActivity("")}
-          className={`w-full rounded-xl px-3 py-2 text-left ${setup.gameId === "" ? "bg-lk-primary text-white" : "bg-white"}`}
+          className={`w-full rounded-xl px-3 py-2 text-start ${setup.gameId === "" ? "bg-lk-primary text-white" : "bg-white"}`}
         >
           Free speech
         </button>
@@ -1199,7 +1207,7 @@ export function App() {
                         disabled={blocked}
                         aria-describedby={blocked ? `reason-${game.id}` : undefined}
                         onClick={() => chooseActivity(game.id)}
-                        className={`w-full rounded-xl px-3 py-2 text-left disabled:opacity-60 ${chosen ? "bg-lk-primary text-white" : "bg-white"}`}
+                        className={`w-full rounded-xl px-3 py-2 text-start disabled:opacity-60 ${chosen ? "bg-lk-primary text-white" : "bg-white"}`}
                       >
                         <span className="flex items-baseline justify-between gap-2">
                           <span>{game.title}</span>
@@ -1246,7 +1254,7 @@ export function App() {
           type="button"
           aria-pressed={setup.hostMode}
           onClick={toggleHost}
-          className={`mb-3 w-full rounded-xl px-3 py-2 text-left ${setup.hostMode ? "bg-lk-primary text-white" : "bg-white"}`}
+          className={`mb-3 w-full rounded-xl px-3 py-2 text-start ${setup.hostMode ? "bg-lk-primary text-white" : "bg-white"}`}
         >
           {setup.hostMode ? "Botnet mode" : "Web mode"}
         </button>
@@ -1301,7 +1309,7 @@ export function App() {
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl">
       <aside
-        className={`${panelOpen ? "fixed inset-0 z-20 block overflow-y-auto" : "hidden"} w-full bg-lk-tint/95 p-4 md:static md:z-auto md:block md:w-72 md:shrink-0 md:border-r md:border-lk-line`}
+        className={`${panelOpen ? "fixed inset-0 z-20 block overflow-y-auto" : "hidden"} w-full bg-lk-tint/95 p-4 md:static md:z-auto md:block md:w-72 md:shrink-0 md:border-e md:border-lk-line`}
       >
         <div className="mb-4 flex items-center justify-between md:block">
           <p className="text-xs tracking-[0.2em] uppercase text-lk-label">Talk</p>
@@ -1351,7 +1359,7 @@ export function App() {
                     type="button"
                     aria-pressed={material.id === setup.materialId}
                     onClick={() => editSetup({ materialId: material.id })}
-                    className={`min-w-0 flex-1 rounded-xl px-3 py-2 text-left ${material.id === setup.materialId ? "bg-lk-primary text-white" : "bg-white"}`}
+                    className={`min-w-0 flex-1 rounded-xl px-3 py-2 text-start ${material.id === setup.materialId ? "bg-lk-primary text-white" : "bg-white"}`}
                   >
                     {material.title}
                     {material.origin === "logoscat" ? (
@@ -1483,7 +1491,7 @@ export function App() {
                       type="button"
                       aria-pressed={person.id === setup.personalityId}
                       onClick={() => editSetup({ personalityId: person.id })}
-                      className={`w-full rounded-xl px-3 py-2 text-left ${person.id === setup.personalityId ? "bg-lk-primary text-white" : "bg-white"}`}
+                      className={`w-full rounded-xl px-3 py-2 text-start ${person.id === setup.personalityId ? "bg-lk-primary text-white" : "bg-white"}`}
                     >
                       <span className="block">{person.name}</span>
                       <span className="block text-xs opacity-80">{person.summary}</span>
@@ -1516,7 +1524,7 @@ export function App() {
                           type="button"
                           aria-pressed={setup.teacherMode === mode}
                           onClick={() => chooseTeacherMode(mode)}
-                          className={`w-full rounded-xl px-3 py-2 text-left ${setup.teacherMode === mode ? "bg-lk-primary text-white" : "bg-white"}`}
+                          className={`w-full rounded-xl px-3 py-2 text-start ${setup.teacherMode === mode ? "bg-lk-primary text-white" : "bg-white"}`}
                         >
                           {mode === "relaxed" ? "Relaxed" : "Pedantic"}
                         </button>
@@ -1539,7 +1547,7 @@ export function App() {
             type="button"
             aria-pressed={setup.qa}
             onClick={toggleQa}
-            className={`w-full rounded-xl px-3 py-2 text-left ${setup.qa ? "bg-lk-primary text-white" : "bg-white"}`}
+            className={`w-full rounded-xl px-3 py-2 text-start ${setup.qa ? "bg-lk-primary text-white" : "bg-white"}`}
           >
             {setup.qa ? "On" : "Off"}
           </button>
@@ -1688,8 +1696,8 @@ export function App() {
             {lines.map((line) => (
               <li key={line.id} className="flex items-start gap-2">
                 <div className="min-w-0 flex-1">
-                <span className="mr-2 text-xs uppercase tracking-wide text-lk-label">{line.speaker}</span>
-                {masked(line) ? <span aria-label="Hidden until this line closes">…</span> : line.text}
+                <span className="me-2 text-xs uppercase tracking-wide text-lk-label">{line.speaker}</span>
+                {masked(line) ? <span aria-label="Hidden until this line closes">…</span> : <bdi>{line.text}</bdi>}
                 {line.verdict === "correct" ? <p className="text-xs text-lk-green">Correct</p> : null}
                 {line.verdict === "wrong" ? (
                   line.expected ? (
@@ -1738,6 +1746,7 @@ export function App() {
             onChange={(event) => setDraft(event.target.value)}
             disabled={roundOver || !live}
             placeholder={!live ? "Press Start first" : roundOver ? "The round is over" : "Say something"}
+            dir="auto"
             className="flex-1 rounded-full border border-lk-line bg-lk-tint px-4 py-3"
           />
           <button type="submit" disabled={busy || roundOver || !live} className="rounded-full bg-lk-primary px-5 py-3 text-white disabled:opacity-50">

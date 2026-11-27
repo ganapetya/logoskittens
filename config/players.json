@@ -7,7 +7,8 @@
       "actor": "buddy-one",
       "steerer": "bob",
       "enabled": true,
-      "token_env": "MASHA_ATTACH_TOKEN"
+      "token_env": "MASHA_ATTACH_TOKEN",
+      "volume": {"de": 0.7}
     },
     {
       "body_id": "savelij",

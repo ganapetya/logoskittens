@@ -8,7 +8,7 @@ from logoskittens.persistence import Store
 def test_seed_offers_english_and_norsk(tmp_path):
     store = Store(tmp_path / "catalog.db")
     languages = {row.id: row for row in store.list_languages()}
-    assert set(languages) == {"en", "nb", "uk"}
+    assert set(languages) == {"en", "nb", "uk", "de", "he"}
     assert languages["en"].stt_language == "en"
     assert languages["en"].male_voice == "en_US-lessac-medium"
     assert languages["nb"].display_name == "Norsk"
@@ -18,6 +18,9 @@ def test_seed_offers_english_and_norsk(tmp_path):
     assert languages["uk"].display_name == "Українська"
     assert languages["uk"].stt_language == "uk"
     assert languages["uk"].male_voice == "uk_UA-ukrainian_tts-medium@mykyta"
+    assert languages["de"].display_name == "Deutsch"
+    assert languages["de"].stt_language == "de"
+    assert languages["de"].male_voice == "de_DE-thorsten-medium"
     assert store.get_user("user-local") is not None
 
 

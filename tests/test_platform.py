@@ -19,12 +19,14 @@ import pytest
 def test_live_packs_name_every_prompt_they_call():
     assert language_gaps("en") == []
     assert language_gaps("nb") == []
+    assert language_gaps("uk") == []
+    assert language_gaps("de") == []
 
 
 def test_a_missing_expert_prompt_is_a_gap_and_a_skip(tmp_path, monkeypatch):
-    assert any(item.endswith("rob_de.md") for item in language_gaps("de")) or "languages/de.json" in language_gaps("de")
-    with pytest.raises(ExpertSkipped, match="rob_de"):
-        expert_prompt("rob", "de")
+    assert any(item.endswith("rob_it.md") for item in language_gaps("it")) or "languages/it.json" in language_gaps("it")
+    with pytest.raises(ExpertSkipped, match="rob_it"):
+        expert_prompt("rob", "it")
 
 
 def test_joint_hunting_is_reserved_and_attached_does_not_switch_the_files(tmp_path):

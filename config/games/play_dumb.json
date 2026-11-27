@@ -2,8 +2,8 @@
   "id": "play_dumb",
   "phase": 2,
   "listed": true,
-  "titles": {"en": "PlayDumbGame", "nb": "RettMegGame", "uk": "ВиправGame"},
-  "summary": {"en": "She gets the text wrong. Correct her with the text's own words.", "nb": "Hun husker teksten feil. Rett henne med tekstens egne ord.", "uk": "Вона плутає текст. Виправ її словами з тексту."},
+  "titles": {"en": "PlayDumbGame", "nb": "RettMegGame", "uk": "ВиправGame", "de": "KorrigierMichGame", "he": "תקנואותיGame"},
+  "summary": {"en": "She gets the text wrong. Correct her with the text's own words.", "nb": "Hun husker teksten feil. Rett henne med tekstens egne ord.", "uk": "Вона плутає текст. Виправ її словами з тексту.", "de": "Sie gibt den Text falsch wieder. Korrigiere sie mit den Worten des Textes.", "he": "היא מתבלבלת בטקסט. תקנו אותה במילים של הטקסט."},
   "requires": ["wren"],
   "next": "ask_back",
   "read_text": "play",
@@ -22,7 +22,9 @@
   "closing": {
     "en": "I clearly need to read it again. You fixed {hits} of {total}.",
     "nb": "Jeg må visst lese den igjen. Du rettet {hits} av {total}.",
-    "uk": "Мені явно треба перечитати. Виправлено: {hits} із {total}."
+    "uk": "Мені явно треба перечитати. Виправлено: {hits} із {total}.",
+    "de": "Ich muss das wohl noch mal lesen. Du hast {hits} von {total} korrigiert.",
+    "he": "כנראה צריך לקרוא שוב. תיקנתם {hits} מתוך {total}."
   },
   "capabilities": {"deck_line": true, "contains_match": true, "judge": true}
 }

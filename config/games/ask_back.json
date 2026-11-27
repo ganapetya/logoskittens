@@ -2,8 +2,8 @@
   "id": "ask_back",
   "phase": 2,
   "listed": true,
-  "titles": {"en": "AskBackGame", "nb": "SpørTilbakeGame", "uk": "ЗапитайGame"},
-  "summary": {"en": "She gives an answer from the text. Ask the question it answers.", "nb": "Hun gir et svar fra teksten. Still spørsmålet det svarer på.", "uk": "Вона дає відповідь із тексту. Постав запитання, на яке вона відповідає."},
+  "titles": {"en": "AskBackGame", "nb": "SpørTilbakeGame", "uk": "ЗапитайGame", "de": "FrageZurückGame", "he": "שאלהחוזרתGame"},
+  "summary": {"en": "She gives an answer from the text. Ask the question it answers.", "nb": "Hun gir et svar fra teksten. Still spørsmålet det svarer på.", "uk": "Вона дає відповідь із тексту. Постав запитання, на яке вона відповідає.", "de": "Sie gibt eine Antwort aus dem Text. Stell die Frage, auf die sie antwortet.", "he": "היא נותנת תשובה מהטקסט. שאלו את השאלה שהיא עונה עליה."},
   "requires": ["wren"],
   "next": "react",
   "read_text": "play",
@@ -22,7 +22,9 @@
   "closing": {
     "en": "That was the last answer. You asked {hits} of {total} questions well.",
     "nb": "Det var siste svar. Du stilte {hits} av {total} spørsmål godt.",
-    "uk": "Це була остання відповідь. Вдалих запитань: {hits} із {total}."
+    "uk": "Це була остання відповідь. Вдалих запитань: {hits} із {total}.",
+    "de": "Das war die letzte Antwort. {hits} von {total} Fragen hast du gut gestellt.",
+    "he": "זו הייתה התשובה האחרונה. שאלתם היטב {hits} מתוך {total} שאלות."
   },
   "capabilities": {"deck_line": true, "judge_only": true}
 }

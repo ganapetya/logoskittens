@@ -98,7 +98,7 @@ def _settings_app(tmp_path, settings: dict | None, status: int = 200):
 
 def test_logoscat_sets_become_sources_with_a_pack_and_targets(tmp_path):
     client, seen = _settings_app(
-        tmp_path, {"inputLanguagesSet": ["en", "no", "de"], "outputLanguagesSet": ["no", "en", "he"]}
+        tmp_path, {"inputLanguagesSet": ["en", "no", "it"], "outputLanguagesSet": ["no", "en", "he"]}
     )
     body = client.get("/logoscat/language-settings", headers={"Authorization": f"Bearer {TOKEN}"}).json()
     assert seen == ["/api/language-settings"]
@@ -106,7 +106,7 @@ def test_logoscat_sets_become_sources_with_a_pack_and_targets(tmp_path):
     assert body["sources"] == [
         {"id": "en", "live": True, "reason": ""},
         {"id": "nb", "live": True, "reason": ""},
-        {"id": "de", "live": False, "reason": "No speech pack yet"},
+        {"id": "it", "live": False, "reason": "No speech pack yet"},
     ]
     assert [item["id"] for item in body["targets"]] == ["nb", "en", "he"]
     assert body["max_targets"] == 4
@@ -120,9 +120,9 @@ def test_logged_out_uses_local_defaults_and_the_talk_starts(tmp_path, _switches)
     body = client.get("/logoscat/language-settings").json()
     assert seen == []
     assert body["origin"] == "local"
-    assert [item["id"] for item in body["sources"]] == ["en", "nb", "uk"]
+    assert [item["id"] for item in body["sources"]] == ["en", "nb", "uk", "de", "he"]
     assert all(item["live"] for item in body["sources"])
-    assert [item["id"] for item in body["targets"]] == ["en", "nb", "uk", "de"]
+    assert [item["id"] for item in body["targets"]] == ["en", "nb", "uk", "de", "he"]
     with client.websocket_connect("/ws") as socket:
         socket.send_json(
             {

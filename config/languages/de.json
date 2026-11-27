@@ -1,0 +1,23 @@
+{
+  "id": "de",
+  "display_name": "Deutsch",
+  "default": false,
+  "recognizer_model": "large-v3-turbo",
+  "stt_language": "de",
+  "llm_model": "qwen3:8b",
+  "buddy_voice": "de_DE-thorsten-medium",
+  "first_person_rewrite": false,
+  "reask_soft_misses": false,
+  "language_specifics": "person: 1st\ngender: {gender_word}\nSpeak in the first person: ich, mich, mir, mein. You are a {gender_word}. A noun about yourself takes your own gender: a man says «ich bin Lehrer», «ich bin Berliner»; a woman says «ich bin Lehrerin», «ich bin Berlinerin». Never use your name as the subject. Never say «{other}» about yourself.\n",
+  "gender_words": {"man": "Mann", "woman": "Frau"},
+  "other_words": {"man": "er", "woman": "sie"},
+  "greetings": ["hallo", "hi", "hey", "servus", "moin", "grüß gott", "guten morgen", "guten tag", "guten abend", "tag", "na"],
+  "question_words": ["was", "wer", "wen", "wem", "wessen", "wo", "wohin", "woher", "wann", "warum", "wieso", "weshalb", "wozu", "wie", "welche", "welcher", "welches", "welchen", "wie viel", "wie viele"],
+  "passive": ["ja", "jo", "jep", "okay", "ok", "gut", "genau", "stimmt", "klar", "aha", "hm", "mhm", "na ja"],
+  "whisper": {
+    "flag": "de",
+    "model": "large-v3-turbo",
+    "weight_file": "ggml-large-v3-turbo.bin",
+    "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin"
+  }
+}

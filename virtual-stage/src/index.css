@@ -56,3 +56,21 @@ body::before {
 .anim-shrug { animation: shrug 0.7s ease-in-out 2; }
 .anim-wave { animation: shake-head 0.6s ease-in-out 2; }
 .anim-eye_roll { animation: shake-head 0.8s ease-in-out 1; }
+
+/* Right to left (a Hebrew source). The layout mirrors, but each piece of text keeps the order of its own
+   language, so English labels keep their full stop at the end and "0 of 4" stays in order.
+   Base layer: an explicit alignment class (text-center) still wins. */
+@layer base {
+  :where(html[dir="rtl"]) :where(p, span, li, label, legend, button, a, h1, h2, h3, dt, dd, summary, input, textarea, bdi) {
+    unicode-bidi: plaintext;
+  }
+  :where(html[dir="rtl"]) :where(p, li, label, legend, button, h1, h2, h3, dt, dd, summary) {
+    text-align: right;
+  }
+}
+
+@layer utilities {
+  html[dir="rtl"] .text-start {
+    text-align: right;
+  }
+}

@@ -11,7 +11,9 @@
   "voices": {
     "en": "en_US-ryan-medium",
     "nb": "no_NO-talesyntese-medium",
-    "uk": "uk_UA-ukrainian_tts-medium@mykyta"
+    "uk": "uk_UA-ukrainian_tts-medium@mykyta",
+    "de": "de_DE-thorsten-medium",
+    "he": "he_IL-saspeech-medium"
   },
   "summary": "Man. Pedantic. Serious. Unapologetic. One correction, then he stops."
 }

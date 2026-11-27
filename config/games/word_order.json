@@ -2,8 +2,8 @@
   "id": "word_order",
   "phase": 1,
   "listed": true,
-  "titles": {"en": "WordOrderGame", "nb": "OrdstillingGame", "uk": "ПорядокСлівGame"},
-  "summary": {"en": "Put the shuffled words of a sentence in order and say it.", "nb": "Sett ordene i en setning i riktig rekkefølge og si den.", "uk": "Розстав переплутані слова речення в правильному порядку й скажи його."},
+  "titles": {"en": "WordOrderGame", "nb": "OrdstillingGame", "uk": "ПорядокСлівGame", "de": "WortstellungGame", "he": "סדרמיליםGame"},
+  "summary": {"en": "Put the shuffled words of a sentence in order and say it.", "nb": "Sett ordene i en setning i riktig rekkefølge og si den.", "uk": "Розстав переплутані слова речення в правильному порядку й скажи його.", "de": "Bring die gemischten Wörter eines Satzes in die richtige Reihenfolge und sprich ihn.", "he": "סדרו את המילים המבולבלות של משפט ואמרו אותו."},
   "requires": [],
   "next": "cue_card",
   "prepare": "local",
@@ -20,7 +20,9 @@
   "closing": {
     "en": "That was the last sentence. You got {hits} of {total} in order.",
     "nb": "Det var siste setning. Du fikk {hits} av {total} i riktig rekkefølge.",
-    "uk": "Це було останнє речення. У правильному порядку: {hits} із {total}."
+    "uk": "Це було останнє речення. У правильному порядку: {hits} із {total}.",
+    "de": "Das war der letzte Satz. Du hattest {hits} von {total} in der richtigen Reihenfolge.",
+    "he": "זה היה המשפט האחרון. סידרתם נכון {hits} מתוך {total}."
   },
   "capabilities": {"instruction": true, "exact_match": true, "deck_line": true}
 }

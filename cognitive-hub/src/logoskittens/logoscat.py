@@ -44,16 +44,18 @@ TOKEN_MIN, TOKEN_MAX = 40, 80
 TOKENS_PATH = "/?settings=connected-apps"
 SETTINGS_TTL_S = 600.0
 SESSIONS_TTL_S = 60.0
-_LIVE = {"en": "en", "nb": "nb", "uk": "uk"}
+_LIVE = {"en": "en", "nb": "nb", "uk": "uk", "de": "de", "he": "he"}
 _NORWEGIAN = {"no", "nb", "nob", "nb-no", "no-no"}
 _UKRAINIAN = {"uk", "ukr", "uk-ua"}
-_NAMES = {"en": "English", "nb": "Norsk", "uk": "Українська"}
+_GERMAN = {"de", "deu", "ger", "de-de", "de-at", "de-ch"}
+_HEBREW = {"he", "heb", "iw", "he-il", "iw-il"}
+_NAMES = {"en": "English", "nb": "Norsk", "uk": "Українська", "de": "Deutsch", "he": "עברית"}
 _CODE = re.compile(r"^[a-z]{2,3}(-[a-z0-9]{2,8})*$")
 # LogosCat's own defaults when a user has never saved a set.
 LOGOSCAT_DEFAULTS = ["en", "no", "de"]
 # The sets when nobody is logged in.
-LOCAL_SOURCES = ["en", "nb", "uk"]
-LOCAL_TARGETS = ["en", "nb", "uk", "de"]
+LOCAL_SOURCES = ["en", "nb", "uk", "de", "he"]
+LOCAL_TARGETS = ["en", "nb", "uk", "de", "he"]
 MAX_TARGETS = 4
 NO_PACK = "No speech pack yet"
 
@@ -105,11 +107,15 @@ def live_language(code: str) -> str | None:
         return "nb"
     if value in _UKRAINIAN:
         return "uk"
+    if value in _GERMAN:
+        return "de"
+    if value in _HEBREW:
+        return "he"
     return None
 
 
 def language_code(code: str) -> str:
-    """One hub code. Norwegian becomes nb and Ukrainian uk, as live_language maps them. Other codes pass unchanged."""
+    """One hub code. Norwegian becomes nb, Ukrainian uk, German de, and Hebrew he, as live_language maps them. Other codes pass unchanged."""
     value = (code or "").strip().lower().replace("_", "-")
     return live_language(value) or value
 

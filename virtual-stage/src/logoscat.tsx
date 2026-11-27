@@ -224,7 +224,7 @@ export function SessionsPanel({ hubHttp, token, onClose, onEnded, onPick }: Sess
               <button
                 type="button"
                 onClick={() => onPick(session)}
-                className="w-full rounded-xl bg-white px-3 py-2 text-left"
+                className="w-full rounded-xl bg-white px-3 py-2 text-start"
               >
                 <span className="block">
                   {session.name} ({session.itemCount === 1 ? "1 session item" : `${session.itemCount} session items`})

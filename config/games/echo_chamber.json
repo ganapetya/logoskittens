@@ -2,8 +2,8 @@
   "id": "echo_chamber",
   "phase": 1,
   "listed": true,
-  "titles": {"en": "EchoChamberGame", "nb": "EkkoGame", "uk": "ЛунаGame"},
-  "summary": {"en": "Hear a line from the text and say it back.", "nb": "Hør en linje fra teksten og si den tilbake.", "uk": "Почуй рядок із тексту й повтори його."},
+  "titles": {"en": "EchoChamberGame", "nb": "EkkoGame", "uk": "ЛунаGame", "de": "EchoGame", "he": "הדGame"},
+  "summary": {"en": "Hear a line from the text and say it back.", "nb": "Hør en linje fra teksten og si den tilbake.", "uk": "Почуй рядок із тексту й повтори його.", "de": "Hör eine Zeile aus dem Text und sprich sie nach.", "he": "שמעו שורה מהטקסט וחזרו עליה."},
   "requires": ["wren"],
   "next": "word_order",
   "read_text": "play",
@@ -20,7 +20,9 @@
   "closing": {
     "en": "That was the last line. You got {hits} of {total}.",
     "nb": "Det var siste linje. Du klarte {hits} av {total}.",
-    "uk": "Це був останній рядок. Тобі вдалося {hits} із {total}."
+    "uk": "Це був останній рядок. Тобі вдалося {hits} із {total}.",
+    "de": "Das war die letzte Zeile. Du hattest {hits} von {total}.",
+    "he": "זו הייתה השורה האחרונה. הצלחתם {hits} מתוך {total}."
   },
   "capabilities": {"instruction": true, "exact_match": true, "deck_line": true}
 }

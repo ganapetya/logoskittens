@@ -2,7 +2,7 @@
   "id": "probe",
   "phase": 0,
   "listed": false,
-  "titles": {"en": "ProbeGame", "nb": "ProbeGame", "uk": "ProbeGame"},
+  "titles": {"en": "ProbeGame", "nb": "ProbeGame", "uk": "ProbeGame", "de": "ProbeGame", "he": "ProbeGame"},
   "min_targets": 1,
   "max_targets": 1,
   "max_attempts": 0,

@@ -82,7 +82,19 @@ def test_logoscat_ukrainian_codes_become_uk():
 
 def test_the_launcher_downloads_the_ukrainian_weight_and_the_supervisor_knows_it():
     rows = _script("extra_weights").rows(ROOT / "config")
+    turbo = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin"
+    assert ("uk", "ggml-large-v3-turbo.bin", turbo) in rows
     assert rows == [
+        (
+            "de",
+            "ggml-large-v3-turbo.bin",
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin",
+        ),
+        (
+            "he",
+            "ggml-ivrit-large-v3-turbo.bin",
+            "https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml/resolve/2130c78e4a9cb4914cc4df91a1c3031407789705/ggml-model.bin",
+        ),
         (
             "uk",
             "ggml-large-v3-turbo.bin",

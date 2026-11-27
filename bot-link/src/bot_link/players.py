@@ -17,6 +17,12 @@ class Player:
     steerer: str
     enabled: bool
     token_env: str
+    # Optional loudness per language for this body only, as (language, factor) pairs. 0.7 is 30% quieter.
+    volume: tuple[tuple[str, float], ...] = ()
+
+    def gain(self, language: str) -> float:
+        """The factor for that language's PCM on this body. 1.0 when the file names none."""
+        return dict(self.volume).get((language or "").strip().lower(), 1.0)
 
 
 def config_dir() -> Path:
@@ -73,7 +79,24 @@ def _player(raw: object) -> Player:
         steerer=_text(raw["steerer"], "steerer"),
         enabled=enabled,
         token_env=_text(raw["token_env"], "token_env"),
+        volume=_volume(raw.get("volume")),
     )
+
+
+def _volume(value: object) -> tuple[tuple[str, float], ...]:
+    """`{"de": 0.7}`: a factor above 0 and at most 2 for each language code. Absent means none."""
+    if value is None:
+        return ()
+    if not isinstance(value, dict):
+        raise ValueError("volume must be an object of language to factor")
+    rows = []
+    for language, factor in value.items():
+        if not isinstance(language, str) or not language.strip():
+            raise ValueError("volume keys must be language codes")
+        if isinstance(factor, bool) or not isinstance(factor, (int, float)) or not 0 < factor <= 2:
+            raise ValueError("volume factors must be numbers above 0 and at most 2")
+        rows.append((language.strip().lower(), float(factor)))
+    return tuple(sorted(rows))
 
 
 def _text(value: object, field: str) -> str:

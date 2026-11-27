@@ -86,7 +86,7 @@ export function GameCard({
             <span className="inline-block rounded-full bg-lk-primary px-3 py-1 text-xs uppercase tracking-wide text-white">
               {feedback}
             </span>
-            {feedback === "miss" && chrome.feedback_text ? <span className="ml-2">{chrome.feedback_text}</span> : null}
+            {feedback === "miss" && chrome.feedback_text ? <span className="ms-2">{chrome.feedback_text}</span> : null}
           </p>
         ) : null}
         {chrome.hint && !chrome.finished ? <p className="text-lk-ink">Hint: {chrome.hint}</p> : null}

@@ -138,7 +138,7 @@ if (-not (Test-Path $vad)) {
     }
 }
 
-# Other live packs (Ukrainian) name their weight and its url in config/languages.
+# Other live packs (Ukrainian, German) name their weight and its url in config/languages.
 $extraArgs = @()
 $extraLines = & $python (Join-Path $PSScriptRoot 'extra_weights.py')
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

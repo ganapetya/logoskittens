@@ -158,7 +158,9 @@ def test_selecting_material_starts_a_new_session(tmp_path, monkeypatch):
     assert switched == ["en", "en"]
     listed = client.get("/catalog").json()
     assert listed["languages"] == [
+        {"id": "de", "display_name": "Deutsch"},
         {"id": "en", "display_name": "English"},
+        {"id": "he", "display_name": "עברית"},
         {"id": "nb", "display_name": "Norsk"},
         {"id": "uk", "display_name": "Українська"},
     ]

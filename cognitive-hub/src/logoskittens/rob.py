@@ -353,6 +353,10 @@ def _fallback_explanation(sentence: str, correction: str, why: str, language_id:
         text = f"I «{heard}» si «{correction}» i stedet."
     elif language_id == "uk":
         text = f"У «{heard}» кажи «{correction}»."
+    elif language_id == "de":
+        text = f"Sag in «{heard}» lieber «{correction}»."
+    elif language_id == "he":
+        text = f"במקום «{heard}» אומרים «{correction}»."
     else:
         text = f'In "{heard}" say "{correction}" instead.'
     if why:

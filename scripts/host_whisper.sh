@@ -126,7 +126,7 @@ if [ ! -f "$vad" ]; then
   bash "$src/models/download-vad-model.sh" silero-v6.2.0 "$root"
 fi
 
-# Other live packs (Ukrainian) name their weight and its url in config/languages.
+# Other live packs (Ukrainian, German) name their weight and its url in config/languages.
 set --
 extra=$("$python" "$script_dir/extra_weights.py")
 if [ -n "$extra" ]; then

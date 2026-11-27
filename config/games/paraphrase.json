@@ -2,8 +2,8 @@
   "id": "paraphrase",
   "phase": 2,
   "listed": true,
-  "titles": {"en": "ParaphraseChallengerGame", "nb": "OmskrivGame", "uk": "ПерефразуйGame"},
-  "summary": {"en": "She says it plainly. Agree with her in the text's own words.", "nb": "Hun sier det enkelt. Si deg enig med tekstens egne ord.", "uk": "Вона каже це просто. Погодься з нею словами з тексту."},
+  "titles": {"en": "ParaphraseChallengerGame", "nb": "OmskrivGame", "uk": "ПерефразуйGame", "de": "UmschreibenGame", "he": "פרפרזהGame"},
+  "summary": {"en": "She says it plainly. Agree with her in the text's own words.", "nb": "Hun sier det enkelt. Si deg enig med tekstens egne ord.", "uk": "Вона каже це просто. Погодься з нею словами з тексту.", "de": "Sie sagt es einfach. Stimm ihr mit den Worten des Textes zu.", "he": "היא אומרת את זה בפשטות. הסכימו איתה במילים של הטקסט."},
   "requires": ["wren"],
   "next": "play_dumb",
   "read_text": "play",
@@ -20,7 +20,9 @@
   "closing": {
     "en": "That was the last one. You used the text's words {hits} of {total} times.",
     "nb": "Det var den siste. Du brukte tekstens ord {hits} av {total} ganger.",
-    "uk": "Це було останнє. Слова з тексту прозвучали {hits} із {total} разів."
+    "uk": "Це було останнє. Слова з тексту прозвучали {hits} із {total} разів.",
+    "de": "Das war das letzte. Du hast die Worte des Textes {hits} von {total} Mal benutzt.",
+    "he": "זה היה האחרון. השתמשתם במילים של הטקסט {hits} מתוך {total} פעמים."
   },
   "capabilities": {"instruction": true, "hint": true, "deck_line": true, "contains_match": true, "judge": true}
 }

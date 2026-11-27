@@ -1,0 +1,11 @@
+{
+  "id": "lena",
+  "name": "Lena",
+  "gender": "woman",
+  "mood": "nachdenklich",
+  "home": "München",
+  "stance": "sanft",
+  "likes": ["Bücher", "die Berge"],
+  "voice_id": "de_DE-kerstin-low",
+  "summary": "Frau. Nachdenklich. Aus München. Mag Bücher und die Berge."
+}

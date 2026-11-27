@@ -1,0 +1,11 @@
+{
+  "id": "maya",
+  "name": "מאיה",
+  "gender": "woman",
+  "mood": "מהורהרת",
+  "home": "חיפה",
+  "stance": "עדינה",
+  "likes": ["ספרים", "הכרמל"],
+  "voice_id": "he_IL-saspeech-medium",
+  "summary": "אישה. מהורהרת. מחיפה. אוהבת ספרים ואת הכרמל."
+}
