@@ -18,6 +18,8 @@ Everything links to your logoscat.com account, allowing you to use the texts you
 
 ## Use your logoscat materials
 
+You can bring in the sessions you worked on at logoscat.com, so the conversation is about concrete subjects that interest you. New to LogosCat? Read [how to get started with LogosCat](https://portal.logoscat.com/how-to-get-started-with-logoscat/).
+
 ![Workspace sessions from LogosCat](docs/images/workspace-sessions.png)
 
 ## Example Interaction with bots
