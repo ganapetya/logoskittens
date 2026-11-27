@@ -2,7 +2,7 @@
 
 LogosKittens is a dual-interface, open-source voice client for the polyglot platform [www.logoscat.com](https://www.logoscat.com).
 
-**Why dual-interface?** It is an experimental system that goes beyond a human simply talking to a server to practice languages. Built as a robot-oriented platform, it allows N robots to connect and collaborate on a shared scenario — in this case, helping you learn a language.
+**Why dual-interface?** It is an experimental system that goes beyond a human simply talking to a server to practice languages. Built as a robot-oriented platform, it allows [N robots to connect and collaborate](https://www.youtube.com/watch?v=mm5qdjpUDf0) on a shared scenario — in this case, helping you learn a language.
 
 You can use the web interface to talk directly to your Mac, Linux, or Windows machine, or use the multi-bot interface to converse with physical robots that take on distinct roles, such as a conversation partner and a teacher.
 
