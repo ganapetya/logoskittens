@@ -1,5 +1,31 @@
 # LogosKittens
 
+LogosKittens is a dual-interface, open-source voice client for the polyglot platform [www.logoscat.com](https://www.logoscat.com).
+
+**Why dual-interface?** It is an experimental system that goes beyond a human simply talking to a server to practice languages. Built as a robot-oriented platform, it allows N robots to connect and collaborate on a shared scenario — in this case, helping you learn a language.
+
+You can use the web interface to talk directly to your Mac, Linux, or Windows machine, or use the multi-bot interface to converse with physical robots that take on distinct roles, such as a conversation partner and a teacher.
+
+Everything links to your logoscat.com account, allowing you to use the texts you have translated on the platform as grounding material. This means you can practice speaking directly in the context of the exact material you just translated and studied.
+
+## Web Interface
+
+![Web interface](docs/images/web-mode.png)
+
+## Bot-Net Interface
+
+![Bot-Net interface](docs/images/bot-mode.png)
+
+## Use your logoscat materials
+
+![Workspace sessions from LogosCat](docs/images/workspace-sessions.png)
+
+## Example Interaction with bots
+
+[![Example interaction with bots](https://img.youtube.com/vi/mm5qdjpUDf0/hqdefault.jpg)](https://www.youtube.com/watch?v=mm5qdjpUDf0)
+
+https://www.youtube.com/watch?v=mm5qdjpUDf0
+
 **Cognitive Edge & Robot Middleware for free conversation and embodied agents.**
 
 The live talk is specified in [`free_conv.md`](free_conv.md). LogosKittens decouples high-level cognitive reasoning from execution media. The same primitives (`Situation`, `Task`, `Actor`, `GroupSolution`, `ElementSolution`) drive both screen avatars and physical robots. The system runs locally by default (Docker, Whisper.cpp, Piper TTS, SQLite) with an OpenAI-compatible LLM abstraction that supports local models and Grok.
