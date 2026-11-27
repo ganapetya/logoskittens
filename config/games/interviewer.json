@@ -1,0 +1,27 @@
+{
+  "id": "interviewer",
+  "phase": 1,
+  "listed": true,
+  "titles": {"en": "InterviewerGame", "nb": "IntervjuetGame", "uk": "Інтерв'юGame"},
+  "summary": {"en": "Answer questions about the text out loud.", "nb": "Svar høyt på spørsmål om teksten.", "uk": "Відповідай уголос на запитання про текст."},
+  "requires": ["wren"],
+  "next": "taboo",
+  "read_text": "play",
+  "min_targets": 4,
+  "max_targets": 6,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "show_source": true,
+  "reveal_on_miss": "final",
+  "stt_bias": "expected",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last question. You got {hits} of {total}.",
+    "nb": "Det var siste spørsmål. Du klarte {hits} av {total}.",
+    "uk": "Це було останнє запитання. Тобі вдалося {hits} із {total}."
+  },
+  "capabilities": {"deck_line": true, "contains_match": true, "judge": true}
+}

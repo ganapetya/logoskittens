@@ -1,0 +1,22 @@
+{
+  "players": [
+    {
+      "body_id": "masha",
+      "display_name": "Masha",
+      "role": "buddy",
+      "actor": "buddy-one",
+      "steerer": "bob",
+      "enabled": true,
+      "token_env": "MASHA_ATTACH_TOKEN"
+    },
+    {
+      "body_id": "savelij",
+      "display_name": "Savelij",
+      "role": "teacher",
+      "actor": "teacher-one",
+      "steerer": "rob",
+      "enabled": true,
+      "token_env": "SAVELIJ_ATTACH_TOKEN"
+    }
+  ]
+}

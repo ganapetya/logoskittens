@@ -1,0 +1,99 @@
+services:
+  audio-engine:
+    build:
+      context: .
+      dockerfile: audio-engine/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      WHISPER_URL: ${WHISPER_URL:-http://host.docker.internal:8082}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [edge]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  cognitive-hub:
+    build:
+      context: .
+      dockerfile: cognitive-hub/Dockerfile
+    ports:
+      # Host 8090. Shakti actors owns host 8080. The process in this container still listens on 8080.
+      - "8090:8080"
+    environment:
+      AUDIO_ENGINE_URL: http://audio-engine:8081
+      SQLITE_PATH: /data/logoskittens.db
+      COMPARISON_LOG: /data/llm-comparison.jsonl
+      LLM_BACKEND: ${LLM_BACKEND:-local}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      LLM_MODEL: ${LLM_MODEL:-qwen3:8b}
+      GROK_BASE_URL: ${GROK_BASE_URL:-https://api.x.ai/v1}
+      GROK_MODEL: ${GROK_MODEL:-grok-4.7}
+      LLM_THINK: ${LLM_THINK:-off}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      BOB_ENABLED: ${BOB_ENABLED:-}
+      BOB_BACKEND: ${BOB_BACKEND:-}
+      BOB_BASE_URL: ${BOB_BASE_URL:-}
+      BOB_MODEL: ${BOB_MODEL:-}
+      BOB_THINK: ${BOB_THINK:-}
+      BOB_TIMEOUT: ${BOB_TIMEOUT:-}
+      BOB_QA: ${BOB_QA:-}
+      BOB_API_KEY: ${BOB_API_KEY:-}
+      BOB_STEER_MAX_CHARS: ${BOB_STEER_MAX_CHARS:-}
+      BOB_EVERY: ${BOB_EVERY:-}
+      LISTEN_POSE: ${LISTEN_POSE:-}
+      ROB_ENABLED: ${ROB_ENABLED:-}
+      ROB_BACKEND: ${ROB_BACKEND:-}
+      ROB_BASE_URL: ${ROB_BASE_URL:-}
+      ROB_MODEL: ${ROB_MODEL:-}
+      ROB_THINK: ${ROB_THINK:-}
+      ROB_TIMEOUT: ${ROB_TIMEOUT:-}
+      ROB_API_KEY: ${ROB_API_KEY:-}
+      ROB_LINE_MAX_CHARS: ${ROB_LINE_MAX_CHARS:-}
+      ROB_EVERY: ${ROB_EVERY:-}
+      WREN_ENABLED: ${WREN_ENABLED:-}
+      WREN_BACKEND: ${WREN_BACKEND:-}
+      WREN_BASE_URL: ${WREN_BASE_URL:-}
+      WREN_MODEL: ${WREN_MODEL:-}
+      WREN_THINK: ${WREN_THINK:-}
+      WREN_TIMEOUT: ${WREN_TIMEOUT:-}
+      WREN_PREFETCH: ${WREN_PREFETCH:-}
+      WREN_API_KEY: ${WREN_API_KEY:-}
+      MASHA_ATTACH_TOKEN: ${MASHA_ATTACH_TOKEN:-}
+      SAVELIJ_ATTACH_TOKEN: ${SAVELIJ_ATTACH_TOKEN:-}
+      WHISPER_CONTROL_URL: ${WHISPER_CONTROL_URL:-http://host.docker.internal:8083}
+      MODE: ${MODE:-dev}
+      LOGOSKITTENS_IN_DOCKER: "1"
+    volumes:
+      - hub-data:/data
+      - ./config:/app/config:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      audio-engine:
+        condition: service_healthy
+    networks: [edge]
+
+  virtual-stage:
+    build:
+      context: .
+      dockerfile: virtual-stage/Dockerfile
+    ports:
+      # Host 5174. Shakti game play UI owns host 5173. Vite in this container listens on 5174.
+      - "5174:5174"
+    environment:
+      VITE_HUB_WS: ws://localhost:8090/ws
+      VITE_HUB_HTTP: http://localhost:8090
+    depends_on:
+      - cognitive-hub
+    networks: [edge]
+
+networks:
+  edge:
+
+volumes:
+  hub-data:

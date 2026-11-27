@@ -1,0 +1,20 @@
+[
+  {
+    "id": "passive_en",
+    "language": "en",
+    "material_id": "norway_vacation_tunnels_fjords",
+    "script": "config/sim/scripts/passive_en.jsonl"
+  },
+  {
+    "id": "curious_en",
+    "language": "en",
+    "material_id": "norway_vacation_tunnels_fjords",
+    "script": "config/sim/scripts/curious_en.jsonl"
+  },
+  {
+    "id": "wanderer_en",
+    "language": "en",
+    "material_id": "norway_vacation_tunnels_fjords",
+    "script": "config/sim/scripts/wanderer_en.jsonl"
+  }
+]

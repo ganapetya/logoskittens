@@ -1,0 +1,26 @@
+{
+  "id": "overhear",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "OverhearGame", "nb": "OverhørtGame", "uk": "ПідслухайGame"},
+  "summary": {"en": "Listen to Savelij and her talk about the text, then answer her question.", "nb": "Lytt til Savelij og henne snakke om teksten, og svar på spørsmålet hennes.", "uk": "Послухай, як Савелій і вона говорять про текст, і відповідай на її запитання."},
+  "requires": ["wren", "teacher_voice"],
+  "next": "review",
+  "min_targets": 3,
+  "max_targets": 5,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "show_source": false,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last question. You caught {hits} of {total}.",
+    "nb": "Det var siste spørsmål. Du fikk med deg {hits} av {total}.",
+    "uk": "Це було останнє запитання. Вловлено: {hits} із {total}."
+  },
+  "capabilities": {"deck_line": true, "contains_match": true, "judge": true}
+}

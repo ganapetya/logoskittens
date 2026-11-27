@@ -1,0 +1,13 @@
+{
+  "id": "probe",
+  "phase": 0,
+  "listed": false,
+  "titles": {"en": "ProbeGame", "nb": "ProbeGame", "uk": "ProbeGame"},
+  "min_targets": 1,
+  "max_targets": 1,
+  "max_attempts": 0,
+  "reveal_phrase": false,
+  "phrase_grounding": "unchecked",
+  "opening": "none",
+  "capabilities": {"instruction": true}
+}

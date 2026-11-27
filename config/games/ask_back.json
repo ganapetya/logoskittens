@@ -1,0 +1,28 @@
+{
+  "id": "ask_back",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "AskBackGame", "nb": "SpørTilbakeGame", "uk": "ЗапитайGame"},
+  "summary": {"en": "She gives an answer from the text. Ask the question it answers.", "nb": "Hun gir et svar fra teksten. Still spørsmålet det svarer på.", "uk": "Вона дає відповідь із тексту. Постав запитання, на яке вона відповідає."},
+  "requires": ["wren"],
+  "next": "react",
+  "read_text": "play",
+  "min_targets": 4,
+  "max_targets": 6,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "show_source": true,
+  "reveal_on_miss": "final",
+  "show_why": "final",
+  "stt_bias": "expected",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last answer. You asked {hits} of {total} questions well.",
+    "nb": "Det var siste svar. Du stilte {hits} av {total} spørsmål godt.",
+    "uk": "Це була остання відповідь. Вдалих запитань: {hits} із {total}."
+  },
+  "capabilities": {"deck_line": true, "judge_only": true}
+}

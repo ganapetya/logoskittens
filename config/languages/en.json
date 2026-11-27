@@ -1,0 +1,18 @@
+{
+  "id": "en",
+  "display_name": "English",
+  "default": true,
+  "recognizer_model": "small.en",
+  "stt_language": "en",
+  "llm_model": "qwen3:8b",
+  "buddy_voice": "en_US-lessac-medium",
+  "first_person_rewrite": true,
+  "language_specifics": "person: 1st\ngender: {gender}\nSpeak in the first person. Use I, me, and my. You are a {gender}. Do not use your name as the subject. Do not say {other} about yourself.\n",
+  "gender_words": {"man": "man", "woman": "woman"},
+  "other_words": {"man": "he", "woman": "she"},
+  "whisper": {
+    "flag": "en",
+    "model": "small.en",
+    "weight_file": "ggml-small.en.bin"
+  }
+}

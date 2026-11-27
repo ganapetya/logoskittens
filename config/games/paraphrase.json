@@ -1,0 +1,26 @@
+{
+  "id": "paraphrase",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "ParaphraseChallengerGame", "nb": "OmskrivGame", "uk": "ПерефразуйGame"},
+  "summary": {"en": "She says it plainly. Agree with her in the text's own words.", "nb": "Hun sier det enkelt. Si deg enig med tekstens egne ord.", "uk": "Вона каже це просто. Погодься з нею словами з тексту."},
+  "requires": ["wren"],
+  "next": "play_dumb",
+  "read_text": "play",
+  "min_targets": 3,
+  "max_targets": 5,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last one. You used the text's words {hits} of {total} times.",
+    "nb": "Det var den siste. Du brukte tekstens ord {hits} av {total} ganger.",
+    "uk": "Це було останнє. Слова з тексту прозвучали {hits} із {total} разів."
+  },
+  "capabilities": {"instruction": true, "hint": true, "deck_line": true, "contains_match": true, "judge": true}
+}

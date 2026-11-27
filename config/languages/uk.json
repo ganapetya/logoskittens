@@ -1,0 +1,23 @@
+{
+  "id": "uk",
+  "display_name": "Українська",
+  "default": false,
+  "recognizer_model": "large-v3-turbo",
+  "stt_language": "uk",
+  "llm_model": "qwen3:8b",
+  "buddy_voice": "uk_UA-ukrainian_tts-medium@mykyta",
+  "first_person_rewrite": false,
+  "reask_soft_misses": false,
+  "language_specifics": "person: 1st\ngender: {gender_word}\nSpeak in the first person: я, мене, мені, мій. You are a {gender_word}. Use your own gender in past-tense verbs and adjectives about yourself: a man says «я був», «я ходив», «я радий»; a woman says «я була», «я ходила», «я рада». Never use your name as the subject. Never say «{other}» about yourself.\n",
+  "gender_words": {"man": "чоловік", "woman": "жінка"},
+  "other_words": {"man": "він", "woman": "вона"},
+  "greetings": ["привіт", "вітаю", "добрий день", "доброго дня", "добрий ранок", "доброго ранку", "добрий вечір", "доброго вечора", "здрастуйте", "здоров", "здоровенькі були", "салют"],
+  "question_words": ["що", "хто", "де", "куди", "звідки", "коли", "чому", "навіщо", "нащо", "як", "який", "яка", "яке", "які", "чий", "чия", "чиє", "чиї", "скільки", "чи"],
+  "passive": ["так", "ага", "угу", "добре", "гаразд", "ок", "окей", "авжеж", "ну"],
+  "whisper": {
+    "flag": "uk",
+    "model": "large-v3-turbo",
+    "weight_file": "ggml-large-v3-turbo.bin",
+    "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin"
+  }
+}

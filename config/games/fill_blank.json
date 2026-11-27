@@ -1,0 +1,21 @@
+{
+  "id": "fill_blank",
+  "phase": 1,
+  "listed": true,
+  "titles": {"en": "FillInGame", "nb": "UtfyllingGame", "uk": "ДоповниGame"},
+  "summary": {"en": "She starts a sentence from the text. You finish it.", "nb": "Hun begynner på en setning fra teksten. Du fullfører den.", "uk": "Вона починає речення з тексту. Ти його закінчуєш."},
+  "requires": ["wren"],
+  "next": "interviewer",
+  "read_text": "play",
+  "min_targets": 3,
+  "max_targets": 5,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "capabilities": {"hint": true, "contains_match": true, "deck_line": true}
+}

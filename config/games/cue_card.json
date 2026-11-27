@@ -1,0 +1,39 @@
+{
+  "id": "cue_card",
+  "phase": 1,
+  "listed": true,
+  "titles": {"en": "CueCardGame", "nb": "StikkordGame", "uk": "ПідказкаGame"},
+  "summary": {"en": "See what a phrase means and say the text's own words for it.", "nb": "Se hva et uttrykk betyr, og si tekstens egne ord for det.", "uk": "Подивися, що означає вислів, і скажи для нього слова з тексту."},
+  "requires": ["wren"],
+  "next": "fill_blank",
+  "read_text": "play",
+  "options": [
+    {
+      "name": "cue_mode",
+      "values": ["meaning", "translation"],
+      "default": "meaning",
+      "needs_targets": ["translation"],
+      "labels": {
+        "en": {"meaning": "Meaning", "translation": "Translation"},
+        "nb": {"meaning": "Betydning", "translation": "Oversettelse"},
+        "uk": {"meaning": "Значення", "translation": "Переклад"}
+      }
+    }
+  ],
+  "min_targets": 4,
+  "max_targets": 8,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last cue. You found {hits} of {total}.",
+    "nb": "Det var siste stikkord. Du fant {hits} av {total}.",
+    "uk": "Це була остання підказка. Знайдено: {hits} із {total}."
+  },
+  "capabilities": {"instruction": true, "hint": true, "contains_match": true, "deck_line": true}
+}

@@ -1,0 +1,28 @@
+{
+  "id": "react",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "ReactGame", "nb": "ReagerGame", "uk": "РеагуйGame"},
+  "summary": {"en": "She says something with feeling. React with a phrase from the text.", "nb": "Hun sier noe med følelse. Reager med et uttrykk fra teksten.", "uk": "Вона каже щось із почуттям. Відреагуй виразом із тексту."},
+  "requires": ["wren"],
+  "next": "overhear",
+  "read_text": "play",
+  "min_targets": 3,
+  "max_targets": 6,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "show_source": true,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last one. You reacted with the text's words {hits} of {total} times.",
+    "nb": "Det var den siste. Du reagerte med tekstens ord {hits} av {total} ganger.",
+    "uk": "Це було останнє. Реакцій словами з тексту: {hits} із {total}."
+  },
+  "too_few": "This text has fewer than 3 reactions ReactGame can use. Choose another text.",
+  "capabilities": {"instruction": true, "deck_line": true, "contains_match": true, "judge": true, "mimic": true}
+}

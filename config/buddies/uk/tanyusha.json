@@ -1,0 +1,11 @@
+{
+  "id": "tanyusha",
+  "name": "Танюша",
+  "gender": "woman",
+  "mood": "задумлива",
+  "home": "Київ",
+  "stance": "лагідна",
+  "likes": ["поезія", "вечірній Дніпро"],
+  "voice_id": "uk_UA-ukrainian_tts-medium@tetiana",
+  "summary": "Жінка. Задумлива. З Києва. Любить поезію й вечірній Дніпро."
+}

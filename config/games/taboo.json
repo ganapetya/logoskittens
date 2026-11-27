@@ -1,0 +1,26 @@
+{
+  "id": "taboo",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "TabooGame", "nb": "TabuGame", "uk": "ТабуGame"},
+  "summary": {"en": "Answer her questions without the plain words on the card. Use the text's own chunk.", "nb": "Svar på spørsmålene uten de enkle ordene på kortet. Bruk tekstens eget uttrykk.", "uk": "Відповідай на її запитання без простих слів із картки. Вживай вираз із тексту."},
+  "requires": ["wren"],
+  "next": "paraphrase",
+  "read_text": "play",
+  "min_targets": 3,
+  "max_targets": 6,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last question. You found {hits} of {total} without the easy words.",
+    "nb": "Det var siste spørsmål. Du fant {hits} av {total} uten de enkle ordene.",
+    "uk": "Це було останнє запитання. Знайдено {hits} із {total} без простих слів."
+  },
+  "capabilities": {"instruction": true, "hint": true, "deck_line": true, "contains_match": true, "buzzer": true, "withhold": true}
+}

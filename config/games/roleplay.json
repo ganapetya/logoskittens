@@ -1,0 +1,23 @@
+{
+  "id": "roleplay",
+  "phase": 3,
+  "listed": true,
+  "titles": {"en": "RoleplayGame", "nb": "RollespillGame", "uk": "РольоваGame"},
+  "summary": {"en": "Play a short scene with her and work the quest phrases in.", "nb": "Spill en kort scene med henne, og få med deg uttrykkene på listen.", "uk": "Зіграй із нею коротку сцену й вплети вирази зі списку."},
+  "requires": ["wren"],
+  "next": "",
+  "read_text": "play",
+  "min_targets": 3,
+  "max_targets": 5,
+  "max_attempts": 0,
+  "reveal_phrase": false,
+  "show_source": false,
+  "partner_passage": true,
+  "reveal_on_miss": "never",
+  "quest_text": "phrase",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": true,
+  "opening": "partner",
+  "capabilities": {"instruction": true, "contains_match": true, "hidden_steer": true, "quest": true, "end_score": true, "finish": true}
+}

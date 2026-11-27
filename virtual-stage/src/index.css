@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* White-blue palette. Green and red are for state and a few buttons. */
+@theme {
+  --color-lk-ink: #0f1e3d;
+  --color-lk-muted: #475569;
+  --color-lk-label: #2563eb;
+  --color-lk-primary: #1d4ed8;
+  --color-lk-tint: #eff6ff;
+  --color-lk-line: #bfdbfe;
+  --color-lk-green: #15803d;
+  --color-lk-red: #dc2626;
+}
+
+/* The kittens sky, as a fixed layer because iOS ignores background-attachment: fixed. */
+html {
+  background: #0e0c26;
+}
+
+body {
+  margin: 0;
+  background: transparent;
+  color: var(--color-lk-ink);
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #0e0c26 url(/kittens.jpg) center center / contain no-repeat;
+  pointer-events: none;
+}
+
+@keyframes shake-head {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-9deg); }
+  75% { transform: rotate(9deg); }
+}
+
+@keyframes nod-head {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@keyframes shrug {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(-4px) rotate(-4deg); }
+  70% { transform: translateY(-2px) rotate(4deg); }
+}
+
+.anim-shake_head { animation: shake-head 0.45s ease-in-out 3; }
+.anim-nod { animation: nod-head 0.5s ease-in-out 2; }
+.anim-point { animation: nod-head 0.4s ease-in-out 2; }
+.anim-shrug { animation: shrug 0.7s ease-in-out 2; }
+.anim-wave { animation: shake-head 0.6s ease-in-out 2; }
+.anim-eye_roll { animation: shake-head 0.8s ease-in-out 1; }

@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "backend": "xai",
+  "base_url": "https://api.x.ai/v1",
+  "model": "grok-4.7",
+  "think": "low",
+  "timeout_s": 60,
+  "prefetch": true
+}

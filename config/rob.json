@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "backend": "xai",
+  "base_url": "https://api.x.ai/v1",
+  "model": "grok-4.7",
+  "think": "low",
+  "timeout_s": 60,
+  "line_max_chars": 240,
+  "explanation_max_chars": 600,
+  "every_n": 3,
+  "pedantic_every_responses": 2
+}

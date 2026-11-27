@@ -1,0 +1,26 @@
+{
+  "id": "echo_chamber",
+  "phase": 1,
+  "listed": true,
+  "titles": {"en": "EchoChamberGame", "nb": "EkkoGame", "uk": "ЛунаGame"},
+  "summary": {"en": "Hear a line from the text and say it back.", "nb": "Hør en linje fra teksten og si den tilbake.", "uk": "Почуй рядок із тексту й повтори його."},
+  "requires": ["wren"],
+  "next": "word_order",
+  "read_text": "play",
+  "min_targets": 4,
+  "max_targets": 8,
+  "max_attempts": 2,
+  "reveal_phrase": true,
+  "reveal_on_miss": "each",
+  "stt_bias": "expected",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "phrase",
+  "deck_text": "phrase",
+  "closing": {
+    "en": "That was the last line. You got {hits} of {total}.",
+    "nb": "Det var siste linje. Du klarte {hits} av {total}.",
+    "uk": "Це був останній рядок. Тобі вдалося {hits} із {total}."
+  },
+  "capabilities": {"instruction": true, "exact_match": true, "deck_line": true}
+}

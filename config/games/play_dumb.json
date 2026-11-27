@@ -1,0 +1,28 @@
+{
+  "id": "play_dumb",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "PlayDumbGame", "nb": "RettMegGame", "uk": "ВиправGame"},
+  "summary": {"en": "She gets the text wrong. Correct her with the text's own words.", "nb": "Hun husker teksten feil. Rett henne med tekstens egne ord.", "uk": "Вона плутає текст. Виправ її словами з тексту."},
+  "requires": ["wren"],
+  "next": "ask_back",
+  "read_text": "play",
+  "min_targets": 3,
+  "max_targets": 6,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "show_source": false,
+  "reveal_on_miss": "final",
+  "show_why": "miss",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "I clearly need to read it again. You fixed {hits} of {total}.",
+    "nb": "Jeg må visst lese den igjen. Du rettet {hits} av {total}.",
+    "uk": "Мені явно треба перечитати. Виправлено: {hits} із {total}."
+  },
+  "capabilities": {"deck_line": true, "contains_match": true, "judge": true}
+}

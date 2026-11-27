@@ -1,0 +1,22 @@
+{
+  "id": "nb",
+  "display_name": "Norsk",
+  "default": false,
+  "recognizer_model": "nb-whisper-large",
+  "stt_language": "no",
+  "llm_model": "qwen3:8b",
+  "buddy_voice": "no_NO-talesyntese-medium",
+  "first_person_rewrite": false,
+  "reask_soft_misses": false,
+  "language_specifics": "person: 1st\ngender: {gender_word}\nSnakk i første person. Bruk jeg, meg og min. Du er en {gender_word}. Ikke bruk navnet ditt som subjekt. Ikke si {other} om deg selv.\n",
+  "gender_words": {"man": "mann", "woman": "kvinne"},
+  "other_words": {"man": "han", "woman": "hun"},
+  "greetings": ["hei", "hallo", "god morgen", "god kveld", "god dag"],
+  "question_words": ["hva", "hvem", "hvor", "hvorfor", "hvordan", "hvilken", "hvilket", "hvilke", "kan", "skal", "vil"],
+  "passive": ["ja", "jepp", "greit"],
+  "whisper": {
+    "flag": "no",
+    "model": "nb-whisper-large",
+    "weight_file": "ggml-nb-whisper-large.bin"
+  }
+}

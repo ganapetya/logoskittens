@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package cerm.execution.v1;
+
+enum EmotionType {
+  EMOTION_NEUTRAL = 0;
+  EMOTION_CURIOSITY = 1;
+  EMOTION_DISAPPOINTMENT = 2;
+  EMOTION_AMUSEMENT = 3;
+  EMOTION_ENCOURAGEMENT = 4;
+  EMOTION_FRUSTRATION = 5;
+}
+
+message Vector3 {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message AudioPayload {
+  string text = 1;
+  string language_code = 2;
+  string voice_model_id = 3;
+  bytes precomputed_audio_pcm = 4;
+}
+
+message KinematicGesture {
+  string primitive_name = 1;
+  Vector3 target_vector = 2;
+  double duration_ms = 3;
+}
+
+message ScreenVisualCue {
+  string animation_id = 1;
+  string focus_target_id = 2;
+  repeated string highlight_elements = 3;
+}
+
+message ElementSolution {
+  string solution_id = 1;
+  string actor_id = 2;
+  EmotionType emotion = 3;
+  AudioPayload speech = 4;
+  repeated KinematicGesture physical_gestures = 5;
+  ScreenVisualCue screen_visuals = 6;
+}

@@ -1,0 +1,13 @@
+{
+  "id": "mary",
+  "name": "Mary",
+  "gender": "woman",
+  "nature": "female spider",
+  "alias": "Masha",
+  "mood": "melancholic",
+  "home": "Venetian",
+  "stance": "humanitarian",
+  "likes": ["romance"],
+  "voice_id": "en_US-lessac-medium",
+  "summary": "Woman. Female spider. Alias Masha. Melancholic. Venetian. Humanitarian. Likes romance."
+}

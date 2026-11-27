@@ -1,0 +1,12 @@
+{
+  "id": "lucas",
+  "default": true,
+  "name": "Lucas",
+  "gender": "man",
+  "mood": "stødig",
+  "home": "Bergen",
+  "stance": "praktisk",
+  "likes": ["sjøen", "en lang tur"],
+  "voice_id": "no_NO-talesyntese-medium",
+  "summary": "Mann. Stødig. Fra Bergen. Liker sjøen."
+}

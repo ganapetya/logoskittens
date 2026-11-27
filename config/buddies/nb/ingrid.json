@@ -1,0 +1,11 @@
+{
+  "id": "ingrid",
+  "name": "Ingrid",
+  "gender": "woman",
+  "mood": "varm",
+  "home": "Oslo",
+  "stance": "varsom",
+  "likes": ["bøker", "en stille kveld"],
+  "voice_id": "no_NO-talesyntese-medium",
+  "summary": "Kvinne. Varm. Fra Oslo. Liker bøker."
+}

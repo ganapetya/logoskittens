@@ -1,0 +1,26 @@
+{
+  "id": "word_order",
+  "phase": 1,
+  "listed": true,
+  "titles": {"en": "WordOrderGame", "nb": "OrdstillingGame", "uk": "ПорядокСлівGame"},
+  "summary": {"en": "Put the shuffled words of a sentence in order and say it.", "nb": "Sett ordene i en setning i riktig rekkefølge og si den.", "uk": "Розстав переплутані слова речення в правильному порядку й скажи його."},
+  "requires": [],
+  "next": "cue_card",
+  "prepare": "local",
+  "min_targets": 3,
+  "max_targets": 6,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "each",
+  "stt_bias": "off",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last sentence. You got {hits} of {total} in order.",
+    "nb": "Det var siste setning. Du fikk {hits} av {total} i riktig rekkefølge.",
+    "uk": "Це було останнє речення. У правильному порядку: {hits} із {total}."
+  },
+  "capabilities": {"instruction": true, "exact_match": true, "deck_line": true}
+}

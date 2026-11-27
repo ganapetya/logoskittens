@@ -1,0 +1,6 @@
+{
+  "open": [
+    {"role": "buddy", "steerer": "bob"},
+    {"role": "teacher", "steerer": "rob"}
+  ]
+}

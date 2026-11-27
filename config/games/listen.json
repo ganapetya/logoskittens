@@ -1,0 +1,26 @@
+{
+  "id": "listen",
+  "phase": 1,
+  "listed": true,
+  "titles": {"en": "ListenGame", "nb": "LyttGame", "uk": "СлухайGame"},
+  "summary": {"en": "Hear a line from the text and say it back from memory.", "nb": "Hør en linje fra teksten og si den tilbake etter hukommelsen.", "uk": "Почуй рядок із тексту й повтори його з пам'яті."},
+  "requires": ["wren"],
+  "next": "echo_chamber",
+  "min_targets": 4,
+  "max_targets": 8,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "each",
+  "stt_bias": "off",
+  "mask_lines": true,
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "phrase",
+  "deck_text": "phrase",
+  "closing": {
+    "en": "That was the last line. You caught {hits} of {total}.",
+    "nb": "Det var siste linje. Du fikk med deg {hits} av {total}.",
+    "uk": "Це був останній рядок. Вловлено: {hits} із {total}."
+  },
+  "capabilities": {"instruction": true, "exact_match": true, "deck_line": true}
+}

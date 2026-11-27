@@ -1,0 +1,26 @@
+{
+  "id": "review",
+  "phase": 2,
+  "listed": true,
+  "titles": {"en": "ReviewGame", "nb": "RepetisjonGame", "uk": "ПовторенняGame"},
+  "summary": {"en": "Chunks you missed in earlier rounds come back as cue cards.", "nb": "Uttrykk du bommet på i tidligere runder, kommer tilbake som stikkord.", "uk": "Вирази, пропущені в попередніх раундах, повертаються як підказки."},
+  "requires": ["wren"],
+  "next": "roleplay",
+  "prepare": "history",
+  "min_targets": 3,
+  "max_targets": 8,
+  "max_attempts": 2,
+  "reveal_phrase": false,
+  "reveal_on_miss": "final",
+  "stt_bias": "deck",
+  "phrase_grounding": "substring",
+  "partner": false,
+  "opening": "stem",
+  "deck_text": "stem",
+  "closing": {
+    "en": "That was the last card. You remembered {hits} of {total}.",
+    "nb": "Det var siste kort. Du husket {hits} av {total}.",
+    "uk": "Це була остання картка. Згадано: {hits} із {total}."
+  },
+  "capabilities": {"instruction": true, "hint": true, "deck_line": true, "contains_match": true}
+}
