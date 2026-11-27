@@ -1,4 +1,4 @@
-# LogosKittens
+# LogosKittens - Robots friendly conversation partner
 
 LogosKittens is a dual-interface, open-source voice client for the polyglot platform [www.logoscat.com](https://www.logoscat.com).
 
