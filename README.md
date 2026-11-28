@@ -48,11 +48,13 @@ Some parts always run on your own machine, some run locally by default, and some
 | --- | --- | --- |
 | Speech recognition | whisper.cpp (`small.en`; `nb-whisper-large` for Norsk; `large-v3-turbo` for Ukrainian) | Local, on the host GPU |
 | Voice | Piper TTS | Local, in Docker |
-| Buddy's replies and the lesson subject | Ollama `qwen3:8b` | Local. Set `LLM_BACKEND=grok` to use Grok instead |
-| Bob (buddy steering), Rob (teacher corrections), Wren (games) | Grok `grok-4.7` | Remote, xAI. Needs `XAI_API_KEY` in `.env` |
+| Buddy's replies and the lesson subject | Ollama `qwen3:8b` | Local. Set `LLM_BACKEND=grok` or `openai` to use Grok or OpenAI instead |
+| Bob (buddy steering), Rob (teacher corrections), Wren (games) | Grok `grok-4.7` | Remote, xAI or OpenAI. Needs `XAI_API_KEY` or `OPENAI_API_KEY` |
 | Prompt training: judge and proposer | Grok `grok-4.7` | Remote, set in `.env_training` |
 
-With no xAI key, free speech still runs fully local: Bob and Rob are skipped, so Savelij makes no corrections, and the games that need Wren are not available. See [Change the model](#change-the-model) for the settings.
+Every remote part can use Grok or OpenAI. Open Settings, **Models** tab (`http://localhost:5174/#/settings/models`) to paste the keys and pick a provider, model, and think level for the buddy, Bob, Rob, and Wren. Values in `.env` are the defaults; a value saved there wins until you press Reset to .env. Keys stay on the hub.
+
+With no xAI or OpenAI key, free speech still runs fully local: Bob and Rob are skipped, so Savelij makes no corrections, and the games that need Wren are not available. See [Set it up right](#set-it-up-right) for the settings.
 
 ## Quick Start
 
@@ -239,20 +241,99 @@ Restart the recognizer after a change. The next start downloads a missing weight
 
 On Windows: `.\scripts\host_whisper.ps1`.
 
-## Change the model
+## Use Google voice and recognition
 
-`LLM_BACKEND` chooses the chat server for the lesson subject and for Buddy's replies. It does not choose the recognizer or the voice. The page has no model picker. Edit `.env`, then recreate the hub so Compose reads the file again:
+Optional. Click Settings in the page header. It opens http://localhost:5174/#/settings in a new tab. Paste a Google Cloud API key, restricted to Text-to-Speech and Speech-to-Text, or a service-account JSON. Then turn on Google voice, Google recognition, or both, and pick a man's, a woman's, and Savelij's voice per language. The settings stay on this hub and need no LogosCat account. When a Google voice call fails, Piper speaks that line.
+
+## Set it up right
+
+This chapter covers where each setting lives, what hardware the local models need, and how to make remote models answer fast.
+
+### Where settings live
+
+| What | Where | Notes |
+| --- | --- | --- |
+| Buddy model, keys, Bob, Rob, Wren defaults | `.env` (copy from `.env.example`) | Read when the hub starts. Recreate the hub after an edit: `docker compose up -d --no-deps cognitive-hub`. |
+| Recognizer weight for English | `.env_recognition` (copy from `.env_recognition.example`) | Restart `./scripts/host_whisper.sh` after an edit. |
+| Prompt training models | `.env_training` (copy from `.env_training.example`) | Training only. Practice never reads it. |
+| Provider, model, and think level per part; xAI and OpenAI keys | Settings page, **Models** tab (`http://localhost:5174/#/settings/models`) | Applies from the next call, no restart. A value saved here wins over `.env` until you press **Reset to .env**. |
+| Google voice and recognition, voices per language | Settings page, **Speech** tab (`http://localhost:5174/#/settings`) | Optional. Without it, Piper speaks and whisper hears. |
+| Source and target languages | Talk panel, **Languages** | Connected to LogosCat, they come from your LogosCat settings ("From LogosCat"). Disconnected, your own choice ("Your choice"). Only the supported languages are listed. |
+
+**Keys never go into git.** `.env`, `.env_training`, and `.env_recognition` are in `.gitignore`; only the `*.example` files are tracked, and they hold empty values. Keys pasted on the Settings page are stored in the hub's SQLite file inside the Docker volume `hub-data`, not in the repo, and the page shows only their last four characters. Before a commit, `git status` should never list `.env`, `.env_training`, `.env_recognition`, or a `*.db` file.
+
+### Local models: hardware
+
+Everything can run on one machine. Three parts use memory:
+
+| Part | Runs on | Weight | Memory it needs |
+| --- | --- | --- | --- |
+| Speech recognition, English (`small.en`) | Host GPU (Metal, CUDA, or Vulkan), CPU fallback | 466 MB | about 1 GB |
+| Speech recognition, Ukrainian, German (`large-v3-turbo`), Hebrew (ivrit.ai turbo) | Host GPU | 1.6 GB | about 2–3 GB |
+| Speech recognition, Norsk (`nb-whisper-large`) | Host GPU | 3.1 GB | about 4 GB |
+| Buddy, Ollama `qwen3:8b` (Q4_K_M) | Host GPU | about 5 GB | about 6 GB with context |
+| Buddy, Ollama `qwen3:1.7b` | Host GPU or CPU | about 1.4 GB | about 2 GB |
+| Voice, Piper | CPU, in Docker | 60–120 MB per voice | small |
+
+Only one recognizer weight is loaded at a time; a language switch swaps it. The memory figures are approximate.
+
+| Machine | Fully local setup |
+| --- | --- |
+| Apple Silicon, 16 GB or more | Default: `qwen3:8b` and every recognizer. 24 GB leaves room for Norsk's large weight beside the buddy. |
+| NVIDIA, 12 GB VRAM or more | Default: `qwen3:8b` and every recognizer on the card. |
+| NVIDIA, 8 GB VRAM | `qwen3:8b` fits alone. With Norsk's large recognizer beside it, layers spill to the CPU; use `qwen3:1.7b`, or a remote buddy. |
+| NVIDIA, 4–6 GB VRAM | `qwen3:1.7b`, or a remote buddy. See [Slow replies](#slow-replies). |
+| No GPU | Recognition works on the CPU but slowly. Use a remote buddy, and consider Google recognition. |
+
+Settings for speed on a local model:
+
+- `LLM_THINK=off` (the default). `qwen3:8b` then answers without a hidden reasoning pass.
+- Check placement with `ollama ps`: `size_vram` should be almost all of `size`. Anything less means part of the model runs on the CPU.
+- The first line after a start loads the model (tens of seconds). Ollama keeps it loaded for 30 minutes (`LLM_KEEP_ALIVE`).
+
+### Remote models: speed
+
+Grok and OpenAI are options for every part: the Buddy, Bob, Rob, and Wren. Set them on the **Models** tab, or in `.env`. Bob, Rob, and Wren work in the background or between rounds, so only the **Buddy** decides how long you wait after you speak.
+
+Reasoning models think before they answer, and that thinking is most of the wait. In one measured session with `gpt-5-mini` at think `low`, a reply of about 30 words carried 150–950 hidden reasoning tokens and took 2.4–10 seconds. For the Buddy:
+
+| Provider | Fastest setting |
+| --- | --- |
+| OpenAI | Think **`minimal`** (or `none` on models that accept it). Or a model that does not reason. |
+| Grok | Think **`low`** (Grok cannot turn reasoning off). Or a non-reasoning model from the list the **Test** button fills, such as `grok-4.20-0309-non-reasoning`. |
+| Local Ollama | Think **`off`**. |
+
+Press **Test** beside a key on the Models tab to list the models that key can use.
+
+English checks every Buddy reply and asks once more when the reply ignores your line or drifts into the text's story; that second call doubles the wait for that turn. The other languages keep the first reply in those cases.
+
+To see the timing, watch the hub log:
 
 ```bash
-docker compose up -d --no-deps cognitive-hub
+docker compose logs -f cognitive-hub | grep -E "first-audio|HTTP 200"
 ```
 
-Two values are accepted. Any other value makes the hub raise `Unknown LLM_BACKEND`.
+`first-audio ms=…` is the time from your recording reaching the hub to the first sound of the reply. Each `openai …` or `grok …` line shows one model call with its time and token counts.
+
+### Recommended setups
+
+| Goal | Recognition | Buddy | Bob, Rob, Wren |
+| --- | --- | --- | --- |
+| Fully local, private | whisper on the host GPU | Ollama `qwen3:8b`, think `off` | Off (no key): no corrections, no Wren games |
+| Best balance | whisper on the host GPU | OpenAI or Grok, think `minimal` / `low` | Same provider, think `low` |
+| Fastest, any computer | Google recognition (Speech tab) | A non-reasoning remote model | Remote, think `low` |
+
+### Change the model
+
+`LLM_BACKEND` in `.env` chooses the Buddy's default provider. The Models tab overrides it per part without a restart.
 
 | `LLM_BACKEND` | Who answers | What to set |
 | --- | --- | --- |
 | `local` | Ollama on this machine. Default `qwen3:8b`. | `LLM_BASE_URL` and `LLM_MODEL`. No API key. |
 | `grok` | Grok at `https://api.x.ai/v1`. Default `grok-4.7`. | `XAI_API_KEY`. Optional `GROK_BASE_URL` and `GROK_MODEL`. |
+| `openai` | OpenAI at `https://api.openai.com/v1`. Default `gpt-5-mini`. | `OPENAI_API_KEY`. Optional `OPENAI_BASE_URL` and `OPENAI_MODEL`. |
+
+Bob, Rob, and Wren default to Grok from `config/bob.json`, `config/rob.json`, and `config/wren.json`. `BOB_BACKEND`, `ROB_BACKEND`, and `WREN_BACKEND` may be `xai` or `openai`. Each uses its own key variable (`BOB_API_KEY`, and so on) when set, then `XAI_API_KEY` or `OPENAI_API_KEY`.
 
 **Another local model.** The name has to be one `ollama list` already shows.
 
@@ -260,41 +341,19 @@ Two values are accepted. Any other value makes the hub raise `Unknown LLM_BACKEN
 ollama pull qwen3:1.7b
 ```
 
-In `.env`:
+Then set `LLM_MODEL=qwen3:1.7b` in `.env` (or on the Models tab) and recreate the hub.
 
-```bash
-LLM_BACKEND=local
-LLM_MODEL=qwen3:1.7b
-```
-
-Then run the hub recreate command above. `local` calls Ollama `POST /api/chat` with JSON output and a 2048-token context.
-
-**Think level.** `LLM_THINK` sets how long the practice model thinks before the reply. Recreate the hub after changing it.
+**Think levels.** `LLM_THINK` in `.env`, or the Think field on the Models tab.
 
 | Backend | Levels | Default |
 | --- | --- | --- |
 | Local Ollama | `off`, `on`, `low`, `medium`, `high`, `max` | `off` |
-| Grok `grok-4.7` | `low`, `medium`, `high`, `xhigh` | empty, which means `high` |
+| Grok | `low`, `medium`, `high`, `xhigh` | empty means `high`; the Models tab uses `low` |
+| OpenAI | `none`, `minimal`, `low`, `medium`, `high`, `xhigh` (the model decides which it accepts) | empty means the model's default (`medium`); the Models tab uses `low` |
 
-`off` sends no reasoning and is the fast local setting. `on` asks the local model to think. `low`, `medium`, `high`, and `max` are named levels. The installed `qwen3:8b` honors `off` and `on`. A named level works when `ollama show <model>` lists it. A name that model does not list is not a level it will follow.
+Grok cannot turn reasoning off, so `off` is refused for Grok in `.env`. A named local level works only when `ollama show <model>` lists it.
 
-Grok cannot turn reasoning off. `off` and `on` are refused when `LLM_BACKEND=grok`. `low` is the fastest Grok level. `xhigh` is the deepest. Leave `LLM_THINK` empty on Grok to keep the model default, `high`.
-
-Training can set the same levels per role with `SIM_TALK_THINK` and `JUDGE_PROPOSER_THINK` in `.env_training`. An empty value uses `LLM_THINK` from the shell, then the default for that backend.
-
-**Grok.** In `.env`:
-
-```bash
-LLM_BACKEND=grok
-XAI_API_KEY=your-key
-GROK_MODEL=grok-4.7
-```
-
-Then recreate the hub. While the backend is `grok`, `GROK_MODEL` is the model name and `LLM_MODEL` is ignored. Grok uses `POST /v1/chat/completions`.
-
-`config/languages/en.json` has an `llm_model` field. The hub stores it. Buddy does not call that field.
-
-Practice does not read `.env_training`. Training does not read `LLM_BACKEND` or `LLM_MODEL`.
+Training sets its own models in `.env_training` (`BACKEND_SIM_TALK`, `BACKEND_JUDGE_PROPOSER`: `local`, `grok`, or `openai`, with `SIM_TALK_THINK` and `JUDGE_PROPOSER_THINK`).
 
 ## Train the prompts
 

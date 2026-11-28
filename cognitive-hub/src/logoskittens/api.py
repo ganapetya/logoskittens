@@ -5,6 +5,7 @@ import base64
 import os
 import re
 import sys
+import threading
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
@@ -22,6 +23,11 @@ from logoskittens.logoscat import mount as mount_logoscat
 from logoskittens.persistence import Store
 from logoskittens.recognizer import switch_recognizer
 from logoskittens.session import SessionService
+from logoskittens import models as model_settings
+from logoskittens.model_routes import mount as mount_models
+from logoskittens.speech import settings as speech_settings
+from logoskittens.speech.router import SpeechRouter
+from logoskittens.speech.routes import mount as mount_speech
 
 # A material or language id in a URL: letters, digits, `_` and `-`. Nothing that walks a path.
 _SAFE_ID = re.compile(r"[A-Za-z0-9_-]{1,120}")
@@ -36,6 +42,9 @@ def create_app(service: SessionService | None = None, link: BotLink | None = Non
         allow_headers=["*"],
     )
     app.state.service = service or _service_from_env()
+    app.state.last_language = ""
+    _load_speech(app.state.service)
+    _load_models(app.state.service)
     app.state.logoscat = LogosCatClient()
     app.state.link = link or BotLink()
     app.state.page_emit = {}
@@ -198,13 +207,13 @@ def create_app(service: SessionService | None = None, link: BotLink | None = Non
                         session_id = service_obj.start()
                         remember()
                         row = service_obj.store.get_session_row(session_id)
-                        await _publish(socket, service_obj, session_id, row.language_id if row else "en")
+                        await _publish(socket, service_obj, session_id, row.language_id if row else "en", app)
                     elif kind == "resume":
                         # Only an existing session. An unknown id is an error, never a new talk.
                         session_id = service_obj.ensure(str(message.get("session_id") or "") or None)
                         remember()
                         row = service_obj.store.get_session_row(session_id)
-                        await _publish(socket, service_obj, session_id, row.language_id if row else "en")
+                        await _publish(socket, service_obj, session_id, row.language_id if row else "en", app)
                     elif kind == "select":
                         language_id = str(message.get("language_id") or "en")
                         session_id = service_obj.select(
@@ -227,7 +236,7 @@ def create_app(service: SessionService | None = None, link: BotLink | None = Non
                             else None,
                         )
                         remember()
-                        await _publish(socket, service_obj, session_id, language_id)
+                        await _publish(socket, service_obj, session_id, language_id, app)
                         await asyncio.to_thread(service_obj.voice_opening, session_id, emit)
                     elif kind == "transcript":
                         session_id = service_obj.ensure(session_id)
@@ -281,7 +290,53 @@ def create_app(service: SessionService | None = None, link: BotLink | None = Non
                 app.state.page_emit.pop(session_id, None)
 
     mount_logoscat(app)
+
+    def _recognition_local() -> None:
+        """Google recognition was turned off. Load whisper for the talk last opened, off the request."""
+        language_id = app.state.last_language or "en"
+        threading.Thread(target=switch_recognizer, args=(language_id,), name="whisper-switch", daemon=True).start()
+
+    mount_speech(
+        app,
+        router_of=lambda: app.state.service.audio,
+        store_of=lambda: app.state.service.store,
+        on_recognition_local=_recognition_local,
+    )
+    mount_models(app, store_of=lambda: app.state.service.store)
     return app
+
+
+def _load_models(service: SessionService) -> None:
+    """The Models tab's choices from the hub database. A broken row leaves the environment in charge."""
+    store = getattr(service, "store", None)
+    if store is None:
+        return
+    try:
+        model_settings.load(store)
+    except Exception as exc:  # noqa: BLE001 - a broken row must not stop the hub
+        print(f"model settings not loaded: {exc}", file=sys.stderr, flush=True)
+        model_settings.reset()
+
+
+def _load_speech(service: SessionService) -> None:
+    """The Google speech settings from the hub database, then a warm connection when Google is on."""
+    store = getattr(service, "store", None)
+    if store is None:
+        return
+    try:
+        current = speech_settings.load(store)
+    except Exception as exc:  # noqa: BLE001 - a broken row must not stop the hub; it stays local
+        print(f"speech settings not loaded: {exc}", file=sys.stderr, flush=True)
+        speech_settings.reset()
+        return
+    _warm_speech(service, current)
+
+
+def _warm_speech(service: SessionService, current=None) -> None:
+    current = current or speech_settings.current()
+    router = getattr(service, "audio", None)
+    if isinstance(router, SpeechRouter) and (current.google_tts or current.google_stt):
+        threading.Thread(target=router.google.warm, args=(current,), name="google-warm", daemon=True).start()
 
 
 def _hello(service: SessionService, session_id: str) -> dict:
@@ -289,13 +344,22 @@ def _hello(service: SessionService, session_id: str) -> dict:
     return {"type": "session", "session_id": session_id, **described}
 
 
-async def _publish(socket: WebSocket, service: SessionService, session_id: str, language_id: str) -> None:
+async def _publish(
+    socket: WebSocket, service: SessionService, session_id: str, language_id: str, app: FastAPI | None = None
+) -> None:
     """Load this language's recognizer, then tell the page the new session.
 
     The spoken opening is sent only after the recognizer call returns, so speech
     is not transcribed by the weight that was loaded for the previous lesson.
     """
-    recognizer = await asyncio.to_thread(switch_recognizer, language_id)
+    if app is not None:
+        app.state.last_language = language_id
+    if speech_settings.current().google_stt:
+        # Google hears this talk. The whisper weight is not reloaded, so Start does not wait for it.
+        recognizer = {"ok": True, "restarted": False, "detail": "Google recognition"}
+    else:
+        recognizer = await asyncio.to_thread(switch_recognizer, language_id)
+    _warm_speech(service)
     payload = _hello(service, session_id)
     payload["recognizer"] = recognizer
     await socket.send_json(payload)
@@ -304,7 +368,7 @@ async def _publish(socket: WebSocket, service: SessionService, session_id: str, 
 def _service_from_env() -> SessionService:
     db_path = Path(os.environ.get("SQLITE_PATH", "data/logoskittens.db"))
     audio_url = os.environ.get("AUDIO_ENGINE_URL", "http://audio-engine:8081")
-    return SessionService(Store(db_path), AudioClient(audio_url))
+    return SessionService(Store(db_path), SpeechRouter(AudioClient(audio_url)))
 
 
 app = create_app()

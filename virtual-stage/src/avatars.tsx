@@ -6,12 +6,25 @@ type FaceProps = {
   role: string;
   ink: string;
   paper: string;
+  /** A portrait under public/. Without one the card draws the simple face. */
+  image?: string;
 };
 
-export function ActorCard({ emotion, animation, speaking, name, role, ink, paper }: FaceProps) {
+export function ActorCard({ emotion, animation, speaking, name, role, ink, paper, image }: FaceProps) {
   const eyes = eyeStyle(emotion);
   return (
     <article className="flex flex-col items-center gap-3 rounded-3xl px-4 py-6" style={{ background: paper, color: ink }}>
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className={`portrait h-40 w-auto select-none ${speaking ? "portrait-speaking" : ""} ${moodClass(emotion)} ${
+            animation ? `anim-${animation}` : ""
+          }`}
+        />
+      ) : (
       <svg viewBox="0 0 160 180" className={`h-40 w-40 ${animation ? `anim-${animation}` : ""}`} aria-hidden="true">
         <circle cx="80" cy="78" r="52" fill={ink} />
         <ellipse cx="58" cy="72" rx="8" ry={eyes.ry} fill={paper} transform={eyes.left} />
@@ -21,12 +34,20 @@ export function ActorCard({ emotion, animation, speaking, name, role, ink, paper
           <path d="M48 52 Q58 46 68 54" stroke={paper} strokeWidth="3" fill="none" />
         )}
       </svg>
+      )}
       <div className="text-center">
         <h2 className="text-xl">{name}</h2>
         <p className="text-sm opacity-80">{role}</p>
       </div>
     </article>
   );
+}
+
+/** The portrait cannot move its eyes, so a mood tints it slightly. */
+function moodClass(emotion: string) {
+  if (emotion === "EMOTION_DISAPPOINTMENT" || emotion === "EMOTION_FRUSTRATION") return "portrait-low";
+  if (emotion === "EMOTION_ENCOURAGEMENT" || emotion === "EMOTION_AMUSEMENT") return "portrait-bright";
+  return "";
 }
 
 function eyeStyle(emotion: string) {

@@ -286,22 +286,27 @@ def test_peter_is_the_default_and_mary_names_herself():
     assert peter.voice_id == "en_US-ryan-medium"
     mary = get_personality("en", "mary")
     assert mary.gender == "woman"
-    assert mary.nature == "female spider"
+    assert mary.nature == ""
     assert mary.alias == "Masha"
     assert peter.alias == ""
     assert peter.nature == ""
-    assert mary.mood == "melancholic"
+    assert mary.mood == "gentle"
     assert mary.home == "Venetian"
     assert mary.stance == "humanitarian"
-    assert mary.likes == ["romance"]
+    assert mary.likes == ["romance", "music", "flowers"]
     assert mary.voice_id == "en_US-lessac-medium"
     card = run_prepare("text", "en", fake_complete)
     mary_user = buddy_user(ongoing_for(card, [], "en", mary), "What is your name?")
     assert "name: Mary" in mary_user
     assert "home: Venetian" in mary_user
-    assert "nature: female spider" in mary_user
+    assert "nature:" not in mary_user
+    assert "spider" not in mary_user
     assert "alias: Masha" in mary_user
-    assert "Nature is what you are" in mary_user
+    # A profile may still set a nature; it reaches the prompt as one line.
+    robot = mary.model_copy(update={"nature": "robot cat"})
+    robot_user = buddy_user(ongoing_for(card, [], "en", robot), "What are you?")
+    assert "nature: robot cat" in robot_user
+    assert "Nature is what you are" in robot_user
     assert "romance" in mary_user
     peter_user = buddy_user(ongoing_for(card, [], "en", peter), "Do you like fish?")
     assert "name: Peter" in peter_user
@@ -686,7 +691,7 @@ def test_selecting_norsk_stores_lucas_or_ingrid(tmp_path):
     titles = {item["id"]: item["title"] for item in described["materials"]}
     assert titles["norway_vacation_tunnels_fjords"] == "Ferie i Norge"
     assert titles["friendly_chat"] == "Vennlig prat"
-    assert titles["spider_brackfast"] == "Edderkoppfrokost"
+    assert titles["cozy_breakfast"] == "Koselig frokost"
     woman = service.select("user-local", "nb", "norway_vacation_tunnels_fjords", "mary")
     assert service.describe(woman)["personality_id"] == "ingrid"
     listed = service.catalog("user-local", "nb")
@@ -844,3 +849,11 @@ def test_a_reading_word_is_offered_on_some_lines_and_may_be_left_out():
     reply = buddy_reply(first, "I came back to the road.", complete)
     assert calls["n"] == 1
     assert reply.line == "The road home was quiet."
+
+
+def test_an_old_talk_on_spider_brackfast_opens_the_cozy_breakfast():
+    from logoskittens.materials import FileRawMaterialSource
+
+    loaded = FileRawMaterialSource().load("en", "spider_brackfast")
+    assert loaded.title == "Cozy Breakfast"
+    assert "spider" not in loaded.text.lower() and "flies" not in loaded.text.lower()

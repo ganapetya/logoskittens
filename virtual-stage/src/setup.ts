@@ -52,15 +52,6 @@ export function cleanTargets(targets: string[], source: string): string[] {
   return kept.slice(0, MAX_TARGETS);
 }
 
-/** Whether this browser has ever stored a target choice. The first visit takes the first entry of the set. */
-export function targetsChosen(): boolean {
-  try {
-    return localStorage.getItem(TARGETS_KEY) !== null;
-  } catch {
-    return false;
-  }
-}
-
 function storedTargets(fallback: unknown): string[] {
   try {
     const raw = localStorage.getItem(TARGETS_KEY);
@@ -81,12 +72,12 @@ function stringMap(value: unknown): Record<string, string> {
 export function readSetup(): Setup {
   try {
     const raw = localStorage.getItem(SETUP_KEY);
-    if (!raw) return { ...EMPTY_SETUP, targets: storedTargets([]) };
+    if (!raw) return EMPTY_SETUP;
     const value = JSON.parse(raw) as Partial<Setup>;
     const languageId = typeof value.languageId === "string" ? value.languageId : "";
     return {
       languageId,
-      targets: cleanTargets(storedTargets(value.targets), languageId),
+      targets: cleanTargets(Array.isArray(value.targets) ? value.targets.filter((item): item is string => typeof item === "string") : [], languageId),
       hostMode: value.hostMode === true,
       qa: value.qa === true,
       personalityId: typeof value.personalityId === "string" ? value.personalityId : "",
@@ -103,10 +94,58 @@ export function readSetup(): Setup {
 export function writeSetup(setup: Setup) {
   try {
     localStorage.setItem(SETUP_KEY, JSON.stringify(setup));
+    // The Settings page reads the source to mirror for a right-to-left language. Targets live per origin.
     localStorage.setItem(SOURCE_KEY, setup.languageId);
-    localStorage.setItem(TARGETS_KEY, JSON.stringify(setup.targets));
   } catch {
     /* the next refresh starts from an empty panel */
+  }
+}
+
+/** Where the language lists came from. Each origin remembers its own source and targets. */
+export type LanguageOrigin = "local" | "logoscat";
+export type LanguageChoice = { source: string; targets: string[] };
+
+const choiceKey = (origin: LanguageOrigin) => `logoskittens.languages.${origin}`;
+
+/**
+ * The remembered choice for one origin, or null before the first one. The local slot is seeded once from the
+ * keys older pages wrote (`logoskittens.source`, `logoskittens.targets`).
+ */
+export function readChoice(origin: LanguageOrigin): LanguageChoice | null {
+  try {
+    const raw = localStorage.getItem(choiceKey(origin));
+    if (raw) {
+      const value = JSON.parse(raw) as Partial<LanguageChoice>;
+      const source = typeof value.source === "string" ? value.source : "";
+      const targets = Array.isArray(value.targets) ? value.targets.filter((item): item is string => typeof item === "string") : [];
+      return { source, targets: cleanTargets(targets, source) };
+    }
+  } catch {
+    /* no remembered choice */
+  }
+  return null;
+}
+
+/**
+ * Once, before the hub answers: pages before per-origin choices kept one shared choice in
+ * `logoskittens.targets`. It becomes the local slot, and the old key is dropped so it is never read again.
+ */
+export function migrateChoice() {
+  try {
+    if (localStorage.getItem(choiceKey("local")) !== null || localStorage.getItem(TARGETS_KEY) === null) return;
+    const source = localStorage.getItem(SOURCE_KEY) ?? "";
+    writeChoice("local", { source, targets: cleanTargets(storedTargets([]), source) });
+    localStorage.removeItem(TARGETS_KEY);
+  } catch {
+    /* nothing to carry over */
+  }
+}
+
+export function writeChoice(origin: LanguageOrigin, choice: LanguageChoice) {
+  try {
+    localStorage.setItem(choiceKey(origin), JSON.stringify(choice));
+  } catch {
+    /* the next visit takes the defaults */
   }
 }
 

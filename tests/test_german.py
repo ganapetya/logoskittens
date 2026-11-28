@@ -40,7 +40,7 @@ def test_selecting_german_maps_peter_to_jonas_and_mary_to_lena(tmp_path):
     titles = {item["id"]: item["title"] for item in man["materials"]}
     assert titles["norway_vacation_tunnels_fjords"] == "Urlaub in Norwegen"
     assert titles["friendly_chat"] == "Freundliches Gespräch"
-    assert titles["spider_brackfast"] == "Spinnenfrühstück"
+    assert titles["cozy_breakfast"] == "Gemütliches Frühstück"
     woman = service.describe(service.select("user-local", "de", "friendly_chat", "mary"))
     assert woman["personality_id"] == "lena"
 

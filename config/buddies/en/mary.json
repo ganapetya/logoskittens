@@ -2,12 +2,11 @@
   "id": "mary",
   "name": "Mary",
   "gender": "woman",
-  "nature": "female spider",
   "alias": "Masha",
-  "mood": "melancholic",
+  "mood": "gentle",
   "home": "Venetian",
   "stance": "humanitarian",
-  "likes": ["romance"],
+  "likes": ["romance", "music", "flowers"],
   "voice_id": "en_US-lessac-medium",
-  "summary": "Woman. Female spider. Alias Masha. Melancholic. Venetian. Humanitarian. Likes romance."
+  "summary": "Woman. Alias Masha. Gentle, warm, and kind. Venetian. Humanitarian. Likes romance, music, and flowers."
 }

@@ -43,7 +43,7 @@ def test_selecting_ukrainian_maps_peter_to_taras_and_mary_to_tanyusha(tmp_path):
     titles = {item["id"]: item["title"] for item in man["materials"]}
     assert titles["norway_vacation_tunnels_fjords"] == "Відпустка в Норвегії"
     assert titles["friendly_chat"] == "Дружня розмова"
-    assert titles["spider_brackfast"] == "Павучий сніданок"
+    assert titles["cozy_breakfast"] == "Затишний сніданок"
     woman = service.describe(service.select("user-local", "uk", "friendly_chat", "mary"))
     assert woman["personality_id"] == "tanyusha"
 

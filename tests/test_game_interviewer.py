@@ -47,7 +47,7 @@ def _service(tmp_path) -> SessionService:
         logoscat_user_id=1,
         workspace_session_id=88,
         language="nb",
-        title="Edderkoppfrokost",
+        title="Koselig frokost",
         text=SOURCE,
     )
     return service

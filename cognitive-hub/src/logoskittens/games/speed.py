@@ -24,6 +24,7 @@ class TurnTiming:
     def __init__(self, game_id: str, stt_ms: float | None = None):
         self.game_id = game_id
         self.ms: dict[str, float] = {}
+        self.tts_via = ""
         self.started = clock()
         if stt_ms is not None:
             self.ms["stt"] = stt_ms
@@ -47,6 +48,13 @@ class TurnTiming:
 
     def line(self) -> str:
         parts = [f"{slot}={self.ms[slot]:.0f}" if slot in self.ms else f"{slot}=-" for slot in SLOTS]
+        from logoskittens.speech import settings as speech_settings
+
+        current = speech_settings.current()
+        if current.google_tts or current.google_stt:
+            # Only while Google is on, so the local line keeps its shape.
+            parts.append(f"stt_via={'google' if current.google_stt else 'whisper'}")
+            parts.append(f"tts_via={self.tts_via or 'cache'}")
         return f"game timing id={self.game_id} " + " ".join(parts)
 
     def emit(self) -> None:

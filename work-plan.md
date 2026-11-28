@@ -118,4 +118,11 @@ Talking games are specified in `games.md`. That work is not one of the items bel
 - [x] Pedantic does not speak on its own. A corrected sentence gets a Correction button. The popup shows the explanation. Hear plays the stored PCM in the browser.
 - [x] pytest covers the relaxed clock, the two-response clock, a note per corrected sentence, a sentence with no note, a bad reply, and a mode switch that does not rewind the cursor.
 
+15. Google speech option. Google Cloud TTS and STT beside Piper and whisper, two independent switches on a Settings page (`#/settings`), for `en`, `nb`, `uk`, `de`, and `he`. The credential (API key or service-account JSON) and the voice choices are rows in the hub SQLite file. Nothing calls LogosCat.
+- [x] The hub `SpeechRouter` (`cognitive-hub/src/logoskittens/speech/`) has the `AudioClient` interface. While Google voice is on, a buddy speaks with the Google voice of their gender and Savelij with the teacher voice. A Google voice failure speaks that line with Piper. A Google recognition failure asks to speak again.
+- [x] The Settings page saves, tests, and removes the credential, never shows it again, plays a sample of each voice, and mirrors for a right-to-left source.
+- [x] pytest covers the PCM format, WAV, WebM, and mp4 routing, the Piper fallback, the hidden credential, voices by gender, the teacher's voice, the Hebrew locale fallback, and Start without the whisper switch.
+- [ ] With a real key: each language's three voices played by ear, and recognition of one recording per language. Confirm whether Google accepts `iw-IL` or `he-IL` for Hebrew recognition.
+- [ ] Median of 10 turns per language, Google against local, in a table here: Google first audio within +300 ms of Piper, Google recognition median at most 1.5 s for a 3 s utterance, no turn past the 6 s voice and 8 s recognition ceilings.
+
 Out of scope while item 9 is open: a second live buddy, and marking item 9 done before its last step.

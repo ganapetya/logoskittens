@@ -11,7 +11,7 @@ import re
 
 from logoskittens.content import config_root
 from logoskittens.expert import ExpertSkipped, expert_prompt
-from logoskittens.llm import LLMError, complete_xai
+from logoskittens.llm import LLMError, complete_remote
 from logoskittens.talk import split_sentences
 from logoskittens.teachers import TeacherProfile
 
@@ -62,8 +62,9 @@ def load_settings() -> RobSettings:
         if not isinstance(loaded, dict):
             raise ValueError("rob.json must be an object")
         raw = loaded
-    key = os.environ.get("ROB_API_KEY", "").strip() or os.environ.get("XAI_API_KEY", "").strip()
-    return RobSettings(
+    # The element's own key counts only while its provider is the environment's. Then the page key, then XAI/OPENAI.
+    key = os.environ.get("ROB_API_KEY", "").strip()
+    settings = RobSettings(
         enabled=_as_bool(_pick("ROB_ENABLED", "enabled", raw, True)),
         backend=str(_pick("ROB_BACKEND", "backend", raw, "xai")).strip().lower(),
         base_url=str(_pick("ROB_BASE_URL", "base_url", raw, "https://api.x.ai/v1")).strip().rstrip("/"),
@@ -78,6 +79,7 @@ def load_settings() -> RobSettings:
         ),
         api_key=key,
     )
+    return _with_page(settings, "rob")
 
 
 def speaker_of(item) -> str:
@@ -220,6 +222,15 @@ def parse_suggestion(raw: str, max_chars: int) -> tuple[str, str]:
     return correction, why
 
 
+def only_punctuation(heard: str, correction: str) -> bool:
+    """True when the two differ only in punctuation, capitals, or spacing."""
+
+    def bare(text: str) -> str:
+        return " ".join(re.sub(r"[^\w\s]", " ", text.casefold()).split())
+
+    return bool(bare(heard)) and bare(heard) == bare(correction)
+
+
 def parse_pedantic(
     raw: str,
     human_lines: list[str],
@@ -263,8 +274,9 @@ def parse_pedantic(
             correction = correction[:line_max].rstrip()
         if len(why) > 240:
             why = why[:240].rstrip()
-        if not correction:
-            parsed.append(("", why, ""))
+        if not correction or only_punctuation(sentence, correction):
+            # Speech recognition wrote the commas and capitals. They are never the learner's mistake.
+            parsed.append(("", "" if correction else why, ""))
             continue
         if not explanation:
             explanation = _fallback_explanation(sentence, correction, why, language_id)
@@ -286,7 +298,7 @@ def suggest_pedantic(
         raise RobSkipped("disabled")
     if not settings.api_key:
         raise RobSkipped("no API key")
-    if settings.backend != "xai":
+    if settings.backend not in ("xai", "openai"):
         raise LLMError(f"Unknown ROB backend: {settings.backend}")
     try:
         system = expert_prompt("rob_pedantic", language_id)
@@ -294,9 +306,10 @@ def suggest_pedantic(
         raise
     except FileNotFoundError as exc:
         raise RobSkipped(str(exc)) from exc
-    raw, _record = complete_xai(
+    raw, _record = complete_remote(
         user,
         system=system,
+        provider=settings.backend,
         base_url=settings.base_url,
         model=settings.model,
         api_key=settings.api_key,
@@ -319,7 +332,7 @@ def suggest(user: str, *, language_id: str = "en") -> tuple[str, str]:
         raise RobSkipped("disabled")
     if not settings.api_key:
         raise RobSkipped("no API key")
-    if settings.backend != "xai":
+    if settings.backend not in ("xai", "openai"):
         raise LLMError(f"Unknown ROB backend: {settings.backend}")
     try:
         system = expert_prompt("rob", language_id)
@@ -327,9 +340,10 @@ def suggest(user: str, *, language_id: str = "en") -> tuple[str, str]:
         raise
     except FileNotFoundError as exc:
         raise RobSkipped(str(exc)) from exc
-    raw, _record = complete_xai(
+    raw, _record = complete_remote(
         user,
         system=system,
+        provider=settings.backend,
         base_url=settings.base_url,
         model=settings.model,
         api_key=settings.api_key,
@@ -393,3 +407,25 @@ def _as_bool(value) -> bool:
     if token in _FALSE:
         return False
     raise ValueError(f"ROB flag must be on or off, not {value!r}")
+
+
+def _with_page(settings, element: str):
+    """Apply the Settings page (Models tab) on top of the json and the environment."""
+    from logoskittens import models
+
+    target = models.resolve(
+        element,
+        provider=settings.backend,
+        base_url=settings.base_url,
+        model=settings.model,
+        think=settings.think,
+        key=settings.api_key,
+    )
+    settings.backend = target.provider
+    settings.base_url = target.base_url
+    settings.model = target.model
+    settings.think = target.think
+    settings.api_key = target.api_key
+    settings.source = target.source
+    settings.key_source = target.key_source
+    return settings

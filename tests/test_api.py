@@ -167,7 +167,7 @@ def test_selecting_material_starts_a_new_session(tmp_path, monkeypatch):
     materials = {item["id"]: item["title"] for item in listed["materials"]}
     assert materials["norway_vacation_tunnels_fjords"] == "Vacation in Norway"
     assert materials["friendly_chat"] == "Friendly chat"
-    assert materials["spider_brackfast"] == "Spider Brackfast"
+    assert materials["cozy_breakfast"] == "Cozy Breakfast"
     assert [item["id"] for item in listed["personalities"]] == ["peter", "mary"]
 
 

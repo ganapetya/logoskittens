@@ -13,7 +13,16 @@ import {
 import { GameCard } from "./games/card";
 import { gameViews, type GameChrome, type GameListing } from "./games/registry";
 import { WordDiff } from "./games/word_diff";
-import { firstChoice, isRtl, languageName, LanguagesBlock, languagesLine, LOCAL_SETS, type LanguageSets } from "./languages";
+import {
+  firstChoice,
+  isRtl,
+  languageName,
+  LanguagesBlock,
+  languagesLine,
+  LOCAL_SETS,
+  originTag,
+  type LanguageSets,
+} from "./languages";
 import { playPcm } from "./pcm";
 import { Preparing } from "./preparing";
 import { decodeSolution, type SolutionView } from "./proto";
@@ -25,9 +34,12 @@ import {
   pruneSetup,
   readSetup,
   sameSetup,
+  migrateChoice,
+  readChoice,
   setupComplete,
-  targetsChosen,
+  writeChoice,
   writeSetup,
+  type LanguageOrigin,
   type Setup,
   type TeacherMode,
 } from "./setup";
@@ -62,7 +74,7 @@ type Line = {
   expected?: string;
 };
 type Material = { id: string; title: string; language: string; origin?: string; logoscat_user_id?: number };
-type Personality = { id: string; name: string; summary: string };
+type Personality = { id: string; name: string; summary: string; gender?: string };
 type Catalog = {
   languages: { id: string; display_name: string }[];
   materials: Material[];
@@ -188,13 +200,17 @@ export function App() {
   const [listDown, setListDown] = useState(false);
   const [catalog, setCatalog] = useState<Catalog>({ languages: [], materials: [], personalities: [] });
   // The draft in the panel. Nothing here reaches the hub until Start.
-  const [setup, setSetup] = useState<Setup>(() => readSetup());
+  const [setup, setSetup] = useState<Setup>(() => {
+    migrateChoice();
+    return readSetup();
+  });
   // The settings of the running session. null until the first Start in this tab.
   const [live, setLive] = useState<Setup | null>(null);
   const [catalogTick, setCatalogTick] = useState(0);
   // The LogosCat sets, or the local defaults. Read before the first write, so a first visit is known.
   const [languageSets, setLanguageSets] = useState<LanguageSets>(LOCAL_SETS);
-  const [firstVisit] = useState(() => !targetsChosen());
+  // Where the language lists came from. Null until the hub has answered, so nothing is remembered under the wrong origin.
+  const [languageOrigin, setLanguageOrigin] = useState<LanguageOrigin | null>(null);
   // At a narrow viewport every section but the one being edited starts closed.
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const open: Record<string, boolean> = {};
@@ -207,6 +223,7 @@ export function App() {
   const [panelTeacher, setPanelTeacher] = useState({ name: "", summary: "" });
   const [buddyName, setBuddyName] = useState("Buddy");
   const [buddySummary, setBuddySummary] = useState("");
+  const [buddyGender, setBuddyGender] = useState("man");
   const buddyNameRef = useRef("Buddy");
   const [auth, setAuth] = useState<LogosCatAuth | null>(() => readAuth());
   const [connectOpen, setConnectOpen] = useState(false);
@@ -302,20 +319,36 @@ export function App() {
   }, [setup.languageId]);
 
   useEffect(() => {
-    // The hub reads LogosCat. Logged out, or LogosCat down, it returns the local defaults.
+    // The hub reads LogosCat. Logged out, or LogosCat down, it returns every language this hub speaks.
+    // Each origin remembers its own choice: Disconnect brings back the user's own, a reconnect the LogosCat one.
     let gone = false;
     const headers: Record<string, string> = auth ? { Authorization: `Bearer ${auth.token}` } : {};
     const apply = (sets: LanguageSets) => {
       if (gone) return;
       setLanguageSets(sets);
+      setLanguageOrigin(sets.origin);
+      const remembered = readChoice(sets.origin);
       setSetup((current) => {
+        const sources = sets.sources.filter((item) => item.live).map((item) => item.id);
         const offered = sets.targets.map((item) => item.id);
-        let languageId = current.languageId;
-        let targets = current.targets;
-        if (!languageId || firstVisit) {
-          const first = firstChoice(sets, languageId);
+        let languageId: string;
+        let targets: string[];
+        if (remembered) {
+          languageId = remembered.source;
+          targets = remembered.targets;
+        } else if (sets.origin === "logoscat") {
+          // First connect: LogosCat's first source and every one of its targets.
+          languageId = sets.default_source ?? "";
+          targets = sets.default_targets ?? [];
+        } else {
+          // Nothing remembered here yet: the hub's first choice, not what LogosCat had on screen.
+          languageId = sets.default_source ?? "";
+          targets = sets.default_targets ?? [];
+        }
+        if (!sources.includes(languageId)) {
+          const first = firstChoice(sets, sets.default_source ?? "");
           languageId = first.source;
-          if (firstVisit && targets.length === 0) targets = first.targets;
+          if (targets.length === 0) targets = sets.default_targets ?? first.targets;
         }
         targets = cleanTargets(
           targets.filter((code) => offered.includes(code)),
@@ -337,7 +370,13 @@ export function App() {
     return () => {
       gone = true;
     };
-  }, [auth, firstVisit]);
+  }, [auth]);
+
+  useEffect(() => {
+    // Remember the choice under the origin the lists came from.
+    if (!languageOrigin || !setup.languageId) return;
+    writeChoice(languageOrigin, { source: setup.languageId, targets: setup.targets });
+  }, [languageOrigin, setup.languageId, setup.targets]);
 
   useEffect(() => {
     const stored = readAuth();
@@ -462,6 +501,7 @@ export function App() {
         const people = message.personalities ?? [];
         const chosen = people.find((item) => item.id === message.personality_id);
         setBuddySummary(chosen?.summary ?? "");
+        setBuddyGender(chosen?.gender ?? "man");
         setTheme(message.theme ?? "");
         setPracticeWords(practiceWordsFrom(message.subject));
         const sessionQa = typeof message.qa === "boolean" ? message.qa : message.bob_qa === true;
@@ -844,6 +884,7 @@ export function App() {
       buddyNameRef.current = known.name;
       setBuddyName(known.name);
       setBuddySummary(known.summary);
+      setBuddyGender(known.gender ?? "man");
     }
     sentOptions.current = params.gameId ? params.gameOptions : {};
     setPanelOpen(false);
@@ -1331,12 +1372,16 @@ export function App() {
         <PanelSection
           id="languages"
           title="Languages"
-          summary={languagesLine(setup.languageId, setup.targets, catalog.languages)}
+          summary={`${languagesLine(setup.languageId, setup.targets, catalog.languages)} · ${originTag(
+            languageSets,
+            auth ? displayName(auth.user) : "",
+          )}`}
           open={sectionOpen("languages")}
           onToggle={toggleSection}
         >
           <LanguagesBlock
             sets={languageSets}
+            account={auth ? displayName(auth.user) : ""}
             source={setup.languageId}
             targets={setup.targets}
             known={catalog.languages}
@@ -1615,6 +1660,14 @@ export function App() {
             >
               Talk
             </button>
+            <a
+              href="#/settings"
+              target="_blank"
+              rel="noopener"
+              className="rounded-full border border-lk-primary px-3 py-1 text-sm"
+            >
+              Settings
+            </a>
             <p className="text-sm text-lk-muted">{status}</p>
           </div>
         </header>
@@ -1622,6 +1675,7 @@ export function App() {
           <ActorCard
             name={buddyName}
             role={buddySummary}
+            image={buddyGender === "woman" ? "/avatars/buddy-woman.png" : "/avatars/buddy-man.png"}
             emotion={emotion}
             animation={animation}
             speaking={speaking}
@@ -1632,6 +1686,7 @@ export function App() {
             <ActorCard
               name={teacherName}
               role={teacherSummary || "Teacher"}
+              image="/avatars/teacher.png"
               emotion={teacherEmotion}
               animation=""
               speaking={teacherSpeaking}

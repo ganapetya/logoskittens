@@ -5,7 +5,7 @@ import os
 import sys
 
 from logoskittens.content import config_root
-from logoskittens.llm import complete_xai
+from logoskittens.llm import complete_remote
 
 _TRUE = {"1", "true", "yes", "on"}
 _FALSE = {"0", "false", "no", "off"}
@@ -47,8 +47,9 @@ def load_settings() -> WrenSettings:
         if not isinstance(loaded, dict):
             raise ValueError("wren.json must be an object")
         raw = loaded
-    key = os.environ.get("WREN_API_KEY", "").strip() or os.environ.get("XAI_API_KEY", "").strip()
-    return WrenSettings(
+    # The element's own key counts only while its provider is the environment's. Then the page key, then XAI/OPENAI.
+    key = os.environ.get("WREN_API_KEY", "").strip()
+    settings = WrenSettings(
         enabled=_as_bool(_pick("WREN_ENABLED", "enabled", raw, True)),
         backend=str(_pick("WREN_BACKEND", "backend", raw, "xai")).strip().lower(),
         base_url=str(_pick("WREN_BASE_URL", "base_url", raw, "https://api.x.ai/v1")).strip().rstrip("/"),
@@ -58,6 +59,7 @@ def load_settings() -> WrenSettings:
         api_key=key,
         prefetch=_as_bool(_pick("WREN_PREFETCH", "prefetch", raw, True)),
     )
+    return _with_page(settings, "wren")
 
 
 def call(*, game_id: str, purpose: str, system: str, user: str) -> str:
@@ -66,11 +68,12 @@ def call(*, game_id: str, purpose: str, system: str, user: str) -> str:
     if not settings.enabled or not settings.api_key:
         print("game wren skipped", file=sys.stderr, flush=True)
         raise WrenSkipped("Wren is not available")
-    if settings.backend != "xai":
+    if settings.backend not in ("xai", "openai"):
         raise ValueError(f"Unknown Wren backend: {settings.backend}")
-    text, record = complete_xai(
+    text, record = complete_remote(
         user,
         system=system,
+        provider=settings.backend,
         base_url=settings.base_url,
         model=settings.model,
         api_key=settings.api_key,
@@ -102,3 +105,25 @@ def _as_bool(value) -> bool:
     if token in _FALSE:
         return False
     raise ValueError(f"Wren flag must be on or off, not {value!r}")
+
+
+def _with_page(settings, element: str):
+    """Apply the Settings page (Models tab) on top of the json and the environment."""
+    from logoskittens import models
+
+    target = models.resolve(
+        element,
+        provider=settings.backend,
+        base_url=settings.base_url,
+        model=settings.model,
+        think=settings.think,
+        key=settings.api_key,
+    )
+    settings.backend = target.provider
+    settings.base_url = target.base_url
+    settings.model = target.model
+    settings.think = target.think
+    settings.api_key = target.api_key
+    settings.source = target.source
+    settings.key_source = target.key_source
+    return settings

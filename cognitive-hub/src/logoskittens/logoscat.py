@@ -53,11 +53,10 @@ _NAMES = {"en": "English", "nb": "Norsk", "uk": "Українська", "de": "D
 _CODE = re.compile(r"^[a-z]{2,3}(-[a-z0-9]{2,8})*$")
 # LogosCat's own defaults when a user has never saved a set.
 LOGOSCAT_DEFAULTS = ["en", "no", "de"]
-# The sets when nobody is logged in.
-LOCAL_SOURCES = ["en", "nb", "uk", "de", "he"]
-LOCAL_TARGETS = ["en", "nb", "uk", "de", "he"]
+# The order the panel lists the live packs in. A new pack under config/ follows them.
+PACK_ORDER = ["en", "nb", "uk", "de", "he"]
 MAX_TARGETS = 4
-NO_PACK = "No speech pack yet"
+NO_SOURCE = "None of your LogosCat source languages is supported here yet"
 
 
 class LogosCatError(Exception):
@@ -137,25 +136,53 @@ def target_codes(values, source: str) -> list[str]:
     return [code for code in _codes(values) if code != source_code][:MAX_TARGETS]
 
 
-def language_sets(inputs, outputs, origin: str) -> dict:
-    """The page's Source and Targets lists. A source needs a language pack. A target needs nothing."""
-    from logoskittens.content import language_gaps
+def supported_languages() -> list[str]:
+    """The live packs: a language with no gaps under config/. Only these are offered as source or target."""
+    from logoskittens.content import language_gaps, languages
 
-    sources = []
-    for code in _codes(inputs):
-        live = not language_gaps(code)
-        sources.append({"id": code, "live": live, "reason": "" if live else NO_PACK})
+    live = [code for code in languages() if not language_gaps(code)]
+    ordered = [code for code in PACK_ORDER if code in live]
+    return ordered + sorted(code for code in live if code not in ordered)
+
+
+def language_sets(inputs, outputs, origin: str) -> dict:
+    """The page's Source and Targets lists, supported languages only. The rest is named in `skipped`.
+
+    LogosCat's sets also give the first choice: the first supported source, and every supported
+    target except that source.
+    """
+    supported = supported_languages()
+    sources = [code for code in _codes(inputs) if code in supported]
+    targets = [code for code in _codes(outputs) if code in supported]
+    skipped = [code for code in _codes(inputs) + _codes(outputs) if code not in supported]
+    default_source = sources[0] if sources else ""
     return {
         "success": True,
         "origin": origin,
-        "sources": sources,
-        "targets": [{"id": code} for code in _codes(outputs)],
+        "sources": [{"id": code, "live": True, "reason": ""} for code in sources],
+        "targets": [{"id": code} for code in targets],
+        "skipped": list(dict.fromkeys(skipped)),
+        "default_source": default_source,
+        "default_targets": [code for code in targets if code != default_source][:MAX_TARGETS],
         "max_targets": MAX_TARGETS,
     }
 
 
 def local_language_sets() -> dict:
-    return language_sets(LOCAL_SOURCES, LOCAL_TARGETS, "local")
+    """Logged out: every live pack, as source and as target. The page remembers its own choice."""
+    supported = supported_languages()
+    found = language_sets(supported, supported, "local")
+    found["default_targets"] = found["default_targets"][:1]
+    return found
+
+
+def logoscat_language_sets(inputs, outputs) -> dict:
+    """LogosCat's sets, filtered. With no supported source the talk falls back to the local sets."""
+    found = language_sets(inputs, outputs, "logoscat")
+    if found["sources"]:
+        return found
+    names = ", ".join(_NAMES.get(code, code) for code in _codes(inputs)) or "none"
+    return {**local_language_sets(), "skipped": found["skipped"], "notice": f"{NO_SOURCE} ({names})."}
 
 
 def plain_sentence(value: str) -> str:
@@ -250,7 +277,7 @@ class LogosCatClient:
         settings = payload.get("settings") if isinstance(payload.get("settings"), dict) else {}
         inputs = settings.get("inputLanguagesSet") or LOGOSCAT_DEFAULTS
         outputs = settings.get("outputLanguagesSet") or LOGOSCAT_DEFAULTS
-        return language_sets(inputs, outputs, "logoscat")
+        return logoscat_language_sets(inputs, outputs)
 
     def exchange(
         self,

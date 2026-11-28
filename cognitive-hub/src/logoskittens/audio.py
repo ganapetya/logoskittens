@@ -48,6 +48,22 @@ class AudioClient:
             raise AudioError(f"transcribe HTTP {response.status_code}: {response.text[:300]}")
         return str(response.json().get("text", "")).strip()
 
+    def convert16k(self, audio: bytes, content_type: str = "application/octet-stream") -> bytes:
+        """A recording Google cannot read as is (Safari's mp4) as 16 kHz mono 16-bit WAV."""
+        try:
+            response = httpx.post(
+                f"{self.base_url}/convert16k",
+                content=audio,
+                headers={"Content-Type": content_type},
+                timeout=self.timeout,
+            )
+        except httpx.HTTPError as exc:
+            raise AudioError(f"convert failed: {exc}") from exc
+        if response.status_code >= 400:
+            print(f"convert unreadable bytes={len(audio)} type={content_type}", file=sys.stderr, flush=True)
+            raise AudioError("The recording could not be read. Hold Speak and try again.")
+        return response.content
+
     def synthesize(self, text: str, language_code: str, voice_id: str) -> bytes:
         try:
             response = httpx.post(

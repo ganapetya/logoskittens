@@ -32,8 +32,9 @@ class SynthesizeRequest(BaseModel):
 def health():
     voice = _voice_path(DEFAULT_VOICE)
     whisper_ok = _whisper_ready()
+    # Whisper is reported, not required: with Google recognition on, the host recognizer may be off.
     body = {
-        "status": "ok" if whisper_ok and voice.is_file() else "degraded",
+        "status": "ok" if voice.is_file() else "degraded",
         "whisper": whisper_ok,
         "whisper_model": "nb-whisper-large",
         "recognizer": "host",
@@ -62,6 +63,18 @@ async def transcribe(request: Request):
     except urllib.error.URLError as exc:
         return Response(f"recognizer unavailable: {exc.reason}", status_code=502)
     return {"text": text, "language": language}
+
+
+@app.post("/convert16k")
+async def convert16k(request: Request):
+    """A recording as 16 kHz mono 16-bit WAV, for a cloud recognizer that cannot read its container."""
+    raw = await request.body()
+    if not raw:
+        return Response("empty recording", status_code=400)
+    wav = _to_16k(raw)
+    if isinstance(wav, Response):
+        return wav
+    return Response(wav, media_type="audio/wav")
 
 
 @app.post("/synthesize")

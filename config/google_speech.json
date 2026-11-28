@@ -1,0 +1,140 @@
+{
+  "_doc": "Google Cloud speech defaults. Voices are ranked best first per gender: WaveNet, Standard, Studio, Chirp3-HD (from shakti-practice config/voices.json, read 2026-11-14). The Settings page overrides the chosen man, woman and teacher voice and the recognition locale and model; those overrides live in the hub SQLite file, not here.",
+  "connect_timeout_s": 2,
+  "tts_timeout_s": 6,
+  "stt_timeout_s": 8,
+  "languages": {
+    "en": {
+      "tts_locale": "en-US",
+      "stt_locale": "en-US",
+      "stt_alt_locale": "",
+      "stt_model": "latest_long",
+      "man": [
+        "en-US-Wavenet-A",
+        "en-US-Wavenet-B",
+        "en-US-Wavenet-D",
+        "en-US-Wavenet-I",
+        "en-US-Wavenet-J",
+        "en-US-Standard-A",
+        "en-US-Standard-B",
+        "en-US-Standard-D",
+        "en-US-Standard-I",
+        "en-US-Standard-J",
+        "en-US-Studio-Q",
+        "en-US-Chirp3-HD-Charon",
+        "en-US-Chirp3-HD-Fenrir",
+        "en-US-Chirp3-HD-Orus",
+        "en-US-Chirp3-HD-Puck"
+      ],
+      "woman": [
+        "en-US-Wavenet-C",
+        "en-US-Wavenet-E",
+        "en-US-Wavenet-F",
+        "en-US-Wavenet-G",
+        "en-US-Wavenet-H",
+        "en-US-Standard-C",
+        "en-US-Standard-E",
+        "en-US-Standard-F",
+        "en-US-Standard-G",
+        "en-US-Standard-H",
+        "en-US-Studio-O",
+        "en-US-Chirp3-HD-Aoede",
+        "en-US-Chirp3-HD-Kore",
+        "en-US-Chirp3-HD-Leda",
+        "en-US-Chirp3-HD-Zephyr"
+      ]
+    },
+    "nb": {
+      "tts_locale": "nb-NO",
+      "stt_locale": "no-NO",
+      "stt_alt_locale": "nb-NO",
+      "stt_model": "latest_long",
+      "man": [
+        "nb-NO-Wavenet-G",
+        "nb-NO-Standard-G",
+        "nb-NO-Chirp3-HD-Charon",
+        "nb-NO-Chirp3-HD-Fenrir",
+        "nb-NO-Chirp3-HD-Orus",
+        "nb-NO-Chirp3-HD-Puck"
+      ],
+      "woman": [
+        "nb-NO-Wavenet-F",
+        "nb-NO-Standard-F",
+        "nb-NO-Chirp3-HD-Aoede",
+        "nb-NO-Chirp3-HD-Kore",
+        "nb-NO-Chirp3-HD-Leda",
+        "nb-NO-Chirp3-HD-Zephyr"
+      ]
+    },
+    "uk": {
+      "tts_locale": "uk-UA",
+      "stt_locale": "uk-UA",
+      "stt_alt_locale": "",
+      "stt_model": "",
+      "man": [
+        "uk-UA-Chirp3-HD-Charon",
+        "uk-UA-Chirp3-HD-Fenrir",
+        "uk-UA-Chirp3-HD-Orus",
+        "uk-UA-Chirp3-HD-Puck"
+      ],
+      "woman": [
+        "uk-UA-Wavenet-B",
+        "uk-UA-Standard-B",
+        "uk-UA-Chirp3-HD-Aoede",
+        "uk-UA-Chirp3-HD-Kore",
+        "uk-UA-Chirp3-HD-Leda",
+        "uk-UA-Chirp3-HD-Zephyr"
+      ]
+    },
+    "de": {
+      "tts_locale": "de-DE",
+      "stt_locale": "de-DE",
+      "stt_alt_locale": "",
+      "stt_model": "",
+      "man": [
+        "de-DE-Wavenet-H",
+        "de-DE-Standard-H",
+        "de-DE-Studio-B",
+        "de-DE-Chirp3-HD-Charon",
+        "de-DE-Chirp3-HD-Fenrir",
+        "de-DE-Chirp3-HD-Orus",
+        "de-DE-Chirp3-HD-Puck"
+      ],
+      "woman": [
+        "de-DE-Wavenet-G",
+        "de-DE-Standard-G",
+        "de-DE-Studio-C",
+        "de-DE-Chirp3-HD-Aoede",
+        "de-DE-Chirp3-HD-Kore",
+        "de-DE-Chirp3-HD-Leda",
+        "de-DE-Chirp3-HD-Zephyr"
+      ]
+    },
+    "he": {
+      "tts_locale": "he-IL",
+      "stt_locale": "iw-IL",
+      "stt_alt_locale": "he-IL",
+      "stt_model": "",
+      "man": [
+        "he-IL-Wavenet-B",
+        "he-IL-Wavenet-D",
+        "he-IL-Standard-B",
+        "he-IL-Standard-D",
+        "he-IL-Chirp3-HD-Charon",
+        "he-IL-Chirp3-HD-Fenrir",
+        "he-IL-Chirp3-HD-Orus",
+        "he-IL-Chirp3-HD-Puck"
+      ],
+      "woman": [
+        "he-IL-Wavenet-A",
+        "he-IL-Wavenet-C",
+        "he-IL-Standard-A",
+        "he-IL-Standard-C",
+        "he-IL-Chirp3-HD-Aoede",
+        "he-IL-Chirp3-HD-Kore",
+        "he-IL-Chirp3-HD-Leda",
+        "he-IL-Chirp3-HD-Zephyr"
+      ]
+    }
+  }
+}

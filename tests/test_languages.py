@@ -103,12 +103,16 @@ def test_logoscat_sets_become_sources_with_a_pack_and_targets(tmp_path):
     body = client.get("/logoscat/language-settings", headers={"Authorization": f"Bearer {TOKEN}"}).json()
     assert seen == ["/api/language-settings"]
     assert body["origin"] == "logoscat"
+    # Only the languages this hub supports. Italian is named in skipped, not offered.
     assert body["sources"] == [
         {"id": "en", "live": True, "reason": ""},
         {"id": "nb", "live": True, "reason": ""},
-        {"id": "it", "live": False, "reason": "No speech pack yet"},
     ]
     assert [item["id"] for item in body["targets"]] == ["nb", "en", "he"]
+    assert body["skipped"] == ["it"]
+    # The first connect takes the first source and every other target.
+    assert body["default_source"] == "en"
+    assert body["default_targets"] == ["nb", "he"]
     assert body["max_targets"] == 4
     # The source's own entry is never a target of that session.
     assert target_codes(["no", "en", "he"], "nb") == ["en", "he"]
@@ -261,3 +265,25 @@ def test_the_judge_writes_why_in_the_first_target(tmp_path):
 
     assert "feedback_language: he" in run(["he", "en"])
     assert "feedback_language: nb" in run([])
+
+
+def test_logoscat_sets_drop_unsupported_targets_and_cap_the_defaults(tmp_path):
+    client, _seen = _settings_app(
+        tmp_path,
+        {"inputLanguagesSet": ["ru", "uk", "it"], "outputLanguagesSet": ["ru", "en", "de", "fr", "he", "nb", "uk"]},
+    )
+    body = client.get("/logoscat/language-settings", headers={"Authorization": f"Bearer {TOKEN}"}).json()
+    assert [item["id"] for item in body["sources"]] == ["uk"]
+    assert [item["id"] for item in body["targets"]] == ["en", "de", "he", "nb", "uk"]
+    assert body["skipped"] == ["ru", "it", "fr"]
+    assert body["default_source"] == "uk"
+    assert body["default_targets"] == ["en", "de", "he", "nb"]
+
+
+def test_no_supported_logoscat_source_falls_back_to_local_with_a_notice(tmp_path):
+    client, _seen = _settings_app(tmp_path, {"inputLanguagesSet": ["ru", "it"], "outputLanguagesSet": ["en"]})
+    body = client.get("/logoscat/language-settings", headers={"Authorization": f"Bearer {TOKEN}"}).json()
+    assert body["origin"] == "local"
+    assert [item["id"] for item in body["sources"]] == ["en", "nb", "uk", "de", "he"]
+    assert body["skipped"] == ["ru", "it"]
+    assert "None of your LogosCat source languages is supported" in body["notice"]

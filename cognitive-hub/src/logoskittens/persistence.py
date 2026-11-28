@@ -199,6 +199,35 @@ class OwnMaterialRow(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=_utcnow)
 
 
+class SpeechSettingsRow(SQLModel, table=True):
+    """The Google speech switches, credential and voice choices. One row, id `main`. Local only.
+
+    The credential is a Google API key or a service-account JSON. It stays on the hub and is never sent to the page.
+    """
+
+    id: str = Field(default="main", primary_key=True)
+    tts_provider: str = "local"
+    stt_provider: str = "local"
+    credential_kind: str = ""
+    credential: str = ""
+    voices_json: str = "{}"
+    recognition_json: str = "{}"
+    updated_at: datetime = Field(default_factory=_utcnow)
+
+
+class ModelSettingsRow(SQLModel, table=True):
+    """The Models tab: the xAI and OpenAI keys and each element's provider, model, and think. One row, id `main`.
+
+    The keys stay on the hub and are never sent to the page.
+    """
+
+    id: str = Field(default="main", primary_key=True)
+    xai_key: str = ""
+    openai_key: str = ""
+    elements_json: str = "{}"
+    updated_at: datetime = Field(default_factory=_utcnow)
+
+
 class Store:
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -862,3 +891,49 @@ class Store:
         with self.engine.connect() as conn:
             row = conn.exec_driver_sql("PRAGMA journal_mode").one()
         return str(row[0]).lower()
+
+    def get_speech_settings(self) -> SpeechSettingsRow | None:
+        with self.open() as db:
+            row = db.get(SpeechSettingsRow, "main")
+            if row is not None:
+                db.expunge(row)
+            return row
+
+    def get_model_settings(self) -> ModelSettingsRow | None:
+        with self.open() as db:
+            row = db.get(ModelSettingsRow, "main")
+            if row is not None:
+                db.expunge(row)
+            return row
+
+    def save_model_settings(self, *, xai_key: str, openai_key: str, elements_json: str) -> None:
+        with self.open() as db:
+            row = db.get(ModelSettingsRow, "main") or ModelSettingsRow(id="main")
+            row.xai_key = xai_key
+            row.openai_key = openai_key
+            row.elements_json = elements_json
+            row.updated_at = _utcnow()
+            db.add(row)
+            db.commit()
+
+    def save_speech_settings(
+        self,
+        *,
+        tts_provider: str,
+        stt_provider: str,
+        credential_kind: str,
+        credential: str,
+        voices_json: str,
+        recognition_json: str,
+    ) -> None:
+        with self.open() as db:
+            row = db.get(SpeechSettingsRow, "main") or SpeechSettingsRow(id="main")
+            row.tts_provider = tts_provider
+            row.stt_provider = stt_provider
+            row.credential_kind = credential_kind
+            row.credential = credential
+            row.voices_json = voices_json
+            row.recognition_json = recognition_json
+            row.updated_at = _utcnow()
+            db.add(row)
+            db.commit()

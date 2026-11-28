@@ -8,3 +8,11 @@ def _bob_stays_offline(monkeypatch):
     monkeypatch.setenv("WREN_ENABLED", "off")
     # A background prefetch would add a Wren call to a test's count. A prefetch test turns it on.
     monkeypatch.setenv("WREN_PREFETCH", "off")
+    # Speech starts local in every test, whatever the developer's hub database says.
+    from logoskittens.speech import settings as speech_settings
+
+    speech_settings.reset()
+    # Model choices start from the environment too.
+    from logoskittens import models
+
+    models.reset()

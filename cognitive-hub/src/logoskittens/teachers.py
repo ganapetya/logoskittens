@@ -34,6 +34,10 @@ def get_teacher(language_id: str) -> TeacherProfile | None:
     voice = (chosen.voices.get(language_id) or chosen.voice_id).strip()
     if not voice:
         return None
+    from logoskittens.speech.voices import overlay
+
+    # While Google voice is on, Savelij speaks with the language's teacher voice, Piper behind it.
+    voice = overlay(language_id, "teacher", voice)
     if voice == chosen.voice_id:
         return chosen
     return chosen.model_copy(update={"voice_id": voice})

@@ -33,6 +33,10 @@ class RawMaterialSource(Protocol):
     def load(self, language: str, material_id: str) -> RawMaterial: ...
 
 
+# Old file ids that a stored talk may still name.
+RENAMED = {"spider_brackfast": "cozy_breakfast"}
+
+
 class FileRawMaterialSource:
     """Read ``config/raw_materials/{language}/{id}.txt``."""
 
@@ -53,6 +57,7 @@ class FileRawMaterialSource:
         return items
 
     def load(self, language: str, material_id: str) -> RawMaterial:
+        material_id = RENAMED.get(material_id, material_id)
         path = self._folder(language) / f"{material_id}.txt"
         if not path.is_file():
             raise FileNotFoundError(f"no raw material {language}/{material_id}")

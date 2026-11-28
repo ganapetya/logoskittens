@@ -76,9 +76,12 @@ def apply_sim_talk(role: Role) -> None:
         os.environ["LLM_BASE_URL"] = role.base_url
         os.environ["LLM_MODEL"] = role.model
         return
-    os.environ["XAI_API_KEY"] = role.api_key
-    os.environ["GROK_BASE_URL"] = role.base_url
-    os.environ["GROK_MODEL"] = role.model
+    from logoskittens.llm import REMOTE
+
+    spec = REMOTE[role.backend]
+    os.environ[spec.key_env] = role.api_key
+    os.environ[spec.base_env] = role.base_url
+    os.environ[spec.model_env] = role.model
 
 
 def complete_for(role: Role):
@@ -104,8 +107,8 @@ def _think(values: dict[str, str], prefix: str) -> str:
 
 def _role(values: dict[str, str], *, backend_key: str, prefix: str, defaults: tuple[str, str, str]) -> Role:
     backend = (values.get(backend_key) or defaults[0]).strip().lower()
-    if backend not in {"local", "grok"}:
-        raise ValueError(f"{backend_key} must be local or grok")
+    if backend not in {"local", "grok", "openai"}:
+        raise ValueError(f"{backend_key} must be local, grok, or openai")
     base_url = (values.get(f"{prefix}_BASE_URL") or "").strip().rstrip("/")
     model = (values.get(f"{prefix}_MODEL") or "").strip()
     api_key = (values.get(f"{prefix}_API_KEY") or "").strip()
@@ -115,10 +118,17 @@ def _role(values: dict[str, str], *, backend_key: str, prefix: str, defaults: tu
         if not base_url or not model:
             raise ValueError(f"{prefix}_BASE_URL and {prefix}_MODEL are required when {backend_key}=local")
         return Role(backend, base_url, model, api_key, _think(values, prefix))
-    base_url = base_url or defaults[1]
-    model = model or defaults[2]
+    if backend == "openai":
+        from logoskittens.llm import remote_defaults
+
+        env_base, env_model, env_key = remote_defaults("openai")
+        base_url = base_url or env_base
+        model = model or env_model
+        api_key = api_key or env_key
+    else:
+        base_url = base_url or defaults[1]
+        model = model or defaults[2]
+        api_key = api_key or os.environ.get("XAI_API_KEY", "").strip()
     if not api_key:
-        api_key = os.environ.get("XAI_API_KEY", "").strip()
-    if not api_key:
-        raise ValueError(f"{prefix}_API_KEY is required when {backend_key}=grok")
+        raise ValueError(f"{prefix}_API_KEY is required when {backend_key}={backend}")
     return Role(backend, base_url, model, api_key, _think(values, prefix))

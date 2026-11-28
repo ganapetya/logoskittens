@@ -1,6 +1,7 @@
 /**
- * Source and target languages (games.md, H14). The sets come from LogosCat through the hub, or the
- * local defaults when logged out. The source is spoken and heard. Targets are only written on the card.
+ * Source and target languages (games.md, H14). Connected, the sets come from LogosCat through the hub;
+ * logged out, they are every language this hub speaks. Both hold only supported languages. Each origin
+ * remembers its own choice (setup.ts). The source is spoken and heard. Targets are only written on the card.
  */
 
 import { MAX_TARGETS } from "./setup";
@@ -10,6 +11,11 @@ export type LanguageSets = {
   origin: "logoscat" | "local";
   sources: SourceOption[];
   targets: { id: string }[];
+  /** LogosCat languages this hub cannot speak yet. They are named, not offered. */
+  skipped?: string[];
+  /** The first choice for an origin with nothing remembered yet. */
+  default_source?: string;
+  default_targets?: string[];
   notice?: string;
 };
 export type Gloss = { id: string; phrase: string; status: string; gloss: Record<string, string> };
@@ -65,8 +71,14 @@ export function firstChoice(sets: LanguageSets, source: string): { source: strin
   return { source: chosen, targets: target ? [target.id] : [] };
 }
 
+/** The panel's short tag for where the lists come from. */
+export function originTag(sets: LanguageSets, account: string): string {
+  return sets.origin === "logoscat" ? (account ? `From LogosCat · ${account}` : "From LogosCat") : "Your choice";
+}
+
 export function LanguagesBlock({
   sets,
+  account,
   source,
   targets,
   known,
@@ -74,6 +86,7 @@ export function LanguagesBlock({
   onTargets,
 }: {
   sets: LanguageSets;
+  account: string;
   source: string;
   targets: string[];
   known?: { id: string; display_name: string }[];
@@ -87,8 +100,20 @@ export function LanguagesBlock({
       onTargets([...targets, code]);
     }
   }
+  const fromLogosCat = sets.origin === "logoscat";
+  const skipped = (sets.skipped ?? []).map((code) => languageName(code, known));
   return (
     <div>
+      <p
+        className={`mb-3 rounded-xl px-3 py-2 text-sm ${fromLogosCat ? "bg-lk-primary text-white" : "bg-lk-tint text-lk-ink"}`}
+      >
+        <span className="block">{originTag(sets, account)}</span>
+        <span className="block text-xs opacity-80">
+          {fromLogosCat
+            ? "Your LogosCat language settings. Disconnect to use your own choice here."
+            : "Every language this hub speaks. Connect LogosCat to use its settings."}
+        </span>
+      </p>
       <fieldset className="mb-3">
         <legend className="mb-1 text-xs text-lk-label">Source</legend>
         <ul className="flex flex-col gap-1">
@@ -139,7 +164,9 @@ export function LanguagesBlock({
           })}
         </ul>
       </fieldset>
-      <p className="text-xs text-lk-muted">{sets.origin === "logoscat" ? "From LogosCat" : "Local defaults"}</p>
+      {skipped.length > 0 ? (
+        <p className="text-xs text-lk-muted">Not supported here yet: {skipped.join(", ")}</p>
+      ) : null}
       {sets.notice ? <p className="text-xs text-lk-red">{sets.notice}</p> : null}
     </div>
   );

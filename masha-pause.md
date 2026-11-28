@@ -24,7 +24,7 @@ On this machine, uncommitted on `main`:
 - A failed or empty recording ends the turn.
 - Speak stays enabled. Losing the pointer also counts as a release.
 - Friendly chat is a second raw material, id `friendly_chat`. English title `Friendly chat`. Norsk title `Vennlig prat`, its own sentences. Norway stays the default.
-- Mary’s gender stays `woman`. Her nature is `female spider`. That is a profile line, not the pronoun key. Peter, Lucas, and Ingrid have no nature. A Norsk click still maps Mary to Ingrid.
+- Mary’s gender stays `woman`. She has no nature line; she is an ordinary, gentle woman. Peter, Lucas, and Ingrid have no nature. A Norsk click still maps Mary to Ingrid.
 
 On Masha, in the `ganapetya/masha` checkout, not committed:
 

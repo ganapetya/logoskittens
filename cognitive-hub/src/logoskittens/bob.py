@@ -10,7 +10,7 @@ import re
 
 from logoskittens.content import config_root
 from logoskittens.expert import ExpertSkipped, expert_prompt
-from logoskittens.llm import LLMError, complete_xai
+from logoskittens.llm import LLMError, complete_remote
 
 _TRUE = {"1", "true", "yes", "on"}
 _FALSE = {"0", "false", "no", "off"}
@@ -56,8 +56,9 @@ def load_settings() -> BobSettings:
         if not isinstance(loaded, dict):
             raise ValueError("bob.json must be an object")
         raw = loaded
-    key = os.environ.get("BOB_API_KEY", "").strip() or os.environ.get("XAI_API_KEY", "").strip()
-    return BobSettings(
+    # The element's own key counts only while its provider is the environment's. Then the page key, then XAI/OPENAI.
+    key = os.environ.get("BOB_API_KEY", "").strip()
+    settings = BobSettings(
         enabled=_as_bool(_pick("BOB_ENABLED", "enabled", raw, True)),
         backend=str(_pick("BOB_BACKEND", "backend", raw, "xai")).strip().lower(),
         base_url=str(_pick("BOB_BASE_URL", "base_url", raw, "https://api.x.ai/v1")).strip().rstrip("/"),
@@ -69,6 +70,7 @@ def load_settings() -> BobSettings:
         qa=_as_bool(_pick("BOB_QA", "qa", raw, False)),
         api_key=key,
     )
+    return _with_page(settings, "bob")
 
 
 def steer_block(steer: str) -> str:
@@ -181,7 +183,7 @@ def suggest(user: str, *, language_id: str = "en") -> tuple[str, str]:
         raise BobSkipped("disabled")
     if not settings.api_key:
         raise BobSkipped("no API key")
-    if settings.backend != "xai":
+    if settings.backend not in ("xai", "openai"):
         raise LLMError(f"Unknown BOB backend: {settings.backend}")
     try:
         system = expert_prompt("bob", language_id)
@@ -189,9 +191,10 @@ def suggest(user: str, *, language_id: str = "en") -> tuple[str, str]:
         raise
     except FileNotFoundError as exc:
         raise BobSkipped(str(exc)) from exc
-    raw, _record = complete_xai(
+    raw, _record = complete_remote(
         user,
         system=system,
+        provider=settings.backend,
         base_url=settings.base_url,
         model=settings.model,
         api_key=settings.api_key,
@@ -228,3 +231,25 @@ def _as_bool(value) -> bool:
     if token in _FALSE:
         return False
     raise ValueError(f"BOB flag must be on or off, not {value!r}")
+
+
+def _with_page(settings, element: str):
+    """Apply the Settings page (Models tab) on top of the json and the environment."""
+    from logoskittens import models
+
+    target = models.resolve(
+        element,
+        provider=settings.backend,
+        base_url=settings.base_url,
+        model=settings.model,
+        think=settings.think,
+        key=settings.api_key,
+    )
+    settings.backend = target.provider
+    settings.base_url = target.base_url
+    settings.model = target.model
+    settings.think = target.think
+    settings.api_key = target.api_key
+    settings.source = target.source
+    settings.key_source = target.key_source
+    return settings

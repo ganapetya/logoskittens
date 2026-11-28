@@ -461,3 +461,37 @@ def test_an_old_session_table_gains_the_rob_columns(tmp_path):
     assert row.rob_why == ""
     assert row.rob_quiet is False
     assert row.teacher_mode == "relaxed"
+
+
+def test_a_punctuation_only_correction_is_dropped():
+    """Speech recognition writes the commas. Savelij never corrects them."""
+    from logoskittens.rob import only_punctuation
+
+    raw = json.dumps(
+        {
+            "notes": [
+                {"correction": "Yes, I liked it.", "why": "Missing comma.", "explanation": "Add a comma after yes."},
+                {"correction": "I went to Bergen.", "why": "Past tense.", "explanation": "Say I went, not I go."},
+            ]
+        }
+    )
+    notes = parse_pedantic(
+        raw, ["yes I liked it", "I go to Bergen yesterday."], line_max=240, explanation_max=600, language_id="en"
+    )
+    assert notes[0] == ("", "", "")
+    assert notes[1][0] == "I went to Bergen."
+    assert only_punctuation("Ja jeg likte det", "Ja, jeg likte det.")
+    assert only_punctuation("так я була там", "Так, я була там.")
+    assert not only_punctuation("I go there", "I went there.")
+
+
+def test_every_rob_prompt_says_punctuation_is_not_an_error():
+    from pathlib import Path
+
+    prompts = Path(__file__).resolve().parents[1] / "config" / "prompts"
+    marks = {"en": "punctuation", "he": "punctuation", "nb": "tegnsetting", "uk": "розділові знаки", "de": "Zeichensetzung"}
+    files = sorted(prompts.glob("rob*.md"))
+    assert len(files) == 10
+    for path in files:
+        language = path.stem.rsplit("_", 1)[1]
+        assert marks[language] in path.read_text(encoding="utf-8"), path.name

@@ -41,7 +41,7 @@ def test_selecting_hebrew_maps_peter_to_noam_and_mary_to_maya(tmp_path):
     titles = {item["id"]: item["title"] for item in man["materials"]}
     assert titles["norway_vacation_tunnels_fjords"] == "חופשה בנורווגיה"
     assert titles["friendly_chat"] == "שיחה ידידותית"
-    assert titles["spider_brackfast"] == "ארוחת בוקר של עכבישה"
+    assert titles["cozy_breakfast"] == "ארוחת בוקר נעימה"
     woman = service.describe(service.select("user-local", "he", "friendly_chat", "mary"))
     assert woman["personality_id"] == "maya"
 

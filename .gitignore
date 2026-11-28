@@ -32,3 +32,6 @@ simulations/**/config/
 simulations/**/baseline/
 simulations/**/calls.log
 simulations/**/*.pcm
+
+# pip install -e metadata
+*.egg-info/

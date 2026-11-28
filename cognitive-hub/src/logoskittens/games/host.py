@@ -978,22 +978,60 @@ def presynthesize(service, session_id: str) -> None:
         person = get_personality(row.language_id, row.personality_id)
         actor = active_buddy(service.actors)
         cache = pcm_cache(service, session_id)
-        made = 0
+        jobs = []
         for text in deck_strings(manifest, deck, row.language_id):
             solution = solution_for(BuddyReply(line=text, emotion="neutral"), actor, row.language_id, person.voice_id)
             key = _pcm_key(solution)
-            if key in cache:
-                continue
-            with service._pcm_lock:
-                if service._pcm.get(session_id) is not cache:
-                    # A new select dropped this session's cache.
-                    return
-            cache.put(key, service.audio.synthesize(text, solution.speech.language_code, solution.speech.voice_model_id))
-            made += 1
+            if key not in cache:
+                jobs.append((key, text, solution.speech.language_code, solution.speech.voice_model_id))
+        made = _voice_jobs(service, session_id, cache, jobs)
+        if made < 0:
+            # A new select dropped this session's cache.
+            return
         made += _presynthesize_teacher(service, session_id, row, deck, cache)
         print(f"game presynth id={row.game_id} lines={made} cached={len(cache)}", file=sys.stderr, flush=True)
     except Exception as exc:  # noqa: BLE001 - a background voice must never break the talk
         print(f"game presynth failed error={type(exc).__name__}", file=sys.stderr, flush=True)
+
+
+GOOGLE_PREFETCH_WORKERS = 4
+
+
+def _voice_jobs(service, session_id: str, cache: speed.PcmCache, jobs: list[tuple]) -> int:
+    """Voice deck lines into the cache. Google lines run four at a time; Piper is CPU bound and stays serial.
+    Returns how many were made, or -1 when a new select dropped this cache."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from logoskittens.speech import settings as speech_settings
+    from logoskittens.speech.voices import split
+
+    synth = getattr(service.audio, "synthesize_background", service.audio.synthesize)
+
+    def alive() -> bool:
+        with service._pcm_lock:
+            return service._pcm.get(session_id) is cache
+
+    def one(job) -> bool:
+        key, text, language_code, voice_id = job
+        if key in cache:
+            return False
+        if not alive():
+            return False
+        cache.put(key, synth(text, language_code, voice_id))
+        return True
+
+    google = speech_settings.current().google_tts and any(split(job[3])[0] for job in jobs)
+    if google and len(jobs) > 1:
+        with ThreadPoolExecutor(max_workers=GOOGLE_PREFETCH_WORKERS, thread_name_prefix="presynth") as pool:
+            made = sum(1 for done in pool.map(one, jobs) if done)
+        return made if alive() else -1
+    made = 0
+    for job in jobs:
+        if not alive():
+            return -1
+        if one(job):
+            made += 1
+    return made
 
 
 def _presynthesize_teacher(service, session_id: str, row, deck: GameDeck, cache: speed.PcmCache) -> int:
@@ -1515,11 +1553,15 @@ def _voice_and_store(
         voiced = _with_audio(service.audio, solution)
     if timing is not None:
         timing.add("tts", (speed.clock() - began) * 1000)
+        if cached is None:
+            from logoskittens.speech.router import last_tts_via
+
+            timing.tts_via = last_tts_via()
     try:
         recognizer = str(language_doc(row.language_id)["recognizer_model"])
     except KeyError:
         recognizer = ""
-    _log_first_audio((time.perf_counter() - started) * 1000, recognizer, voiced.speech.voice_model_id)
+    _log_first_audio((time.perf_counter() - started) * 1000, recognizer, voiced.speech.voice_model_id, row.language_id or "")
     _deliver_voiced(
         service,
         voiced,

@@ -35,6 +35,9 @@ services:
       GROK_MODEL: ${GROK_MODEL:-grok-4.7}
       LLM_THINK: ${LLM_THINK:-off}
       XAI_API_KEY: ${XAI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
       BOB_ENABLED: ${BOB_ENABLED:-}
       BOB_BACKEND: ${BOB_BACKEND:-}
       BOB_BASE_URL: ${BOB_BASE_URL:-}

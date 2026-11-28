@@ -477,6 +477,7 @@ class SessionService:
                 (time.perf_counter() - started) * 1000,
                 language_doc(row.language_id)["recognizer_model"],
                 voiced.speech.voice_model_id,
+                row.language_id or "",
             )
             pose = (row.bob_pose or "").strip() if altered else ""
             tokens = keep_tokens([pose] if pose else [])
@@ -1095,9 +1096,12 @@ def _launch_daemon(fn: Callable[[], None]) -> None:
     threading.Thread(target=fn, name="bob", daemon=True).start()
 
 
-def _log_first_audio(elapsed_ms: float, recognizer: str, voice_id: str) -> None:
+def _log_first_audio(elapsed_ms: float, recognizer: str, voice_id: str, language_id: str = "") -> None:
+    from logoskittens.speech.router import last_tts_via, recognizer_label
+
     print(
-        f"first-audio ms={elapsed_ms:.0f} recognizer={recognizer} voice={voice_id}",
+        f"first-audio ms={elapsed_ms:.0f} recognizer={recognizer_label(language_id, recognizer)} "
+        f"voice={voice_id} tts_via={last_tts_via()}",
         file=sys.stderr,
         flush=True,
     )
